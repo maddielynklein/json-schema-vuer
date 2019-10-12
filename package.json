@@ -2,7 +2,7 @@
   "name": "vueml-json-schema",
   "version": "1.0.0",
   "description": "Vue component to visualize json schema in UML",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/maddielynklein/vueml-json-schema/issues"
   },
-  "homepage": "https://github.com/maddielynklein/vueml-json-schema#readme"
+  "homepage": "https://github.com/maddielynklein/vueml-json-schema#readme",
+  "dependencies": {
+    "vue": "^2.6.10"
+  }
 }

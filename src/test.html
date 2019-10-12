@@ -1,0 +1,38 @@
+<div>
+
+    <div><strong>Bold Title {<!--if closed add ]--></strong></div>
+    <div style="margin-left:20px">
+        <div>name: string</div>
+        <div>information: {</div>
+            <div style="margin-left:20px">
+                <div>firstName: string</div>
+                <div>lastName: string</div>
+                <div>emailAddress: string</div>
+                <div style="margin-left:10px;color:grey;font-size:0.8em">grey description</div>
+                <div style="margin-left:10px;color:cornflowerblue;font-size:0.8em">example: blue text</div>
+                <div style="margin-left:10px">Validation Rules</div>
+                <div style="margin-left:10px">{</div>
+                    <div style="margin-left:20px">
+                        <div>minimum: 5</div>
+                        <div>regex: [pattern]</div>
+                    </div>
+                <div style="margin-left:10px">}</div>
+            </div>
+        <div>}</div>
+        <div>address: {}</div>
+    </div>
+    <div><!--If open-->}</div>
+</div>
+
+<div id="example">
+  <!--<JsonSchemaViewer></JsonSchemaViewer>-->
+</div>
+<script src="https://unpkg.com/vue"></script>
+<script>
+    //import JsonSchemaViewer from './JsonSchemaViewer'
+    new Vue({
+        el: '#example',
+        data: { jsonObj:{} },
+        //components: {JsonSchemaViewer}
+    })
+</script>
