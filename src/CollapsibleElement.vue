@@ -8,7 +8,7 @@
     <div v-show="!isCollapsed" class="vueml-json-details">
       <slot name="content"></slot>
     </div>
-    <span v-if="bottomTag">{{ bottomTag }}</span>
+    <span v-if="bottomTag" :class="{'vueml-json-details' : !showTopTagWhenOpen}">{{ bottomTag }}</span>
   </div>
 </template>
 
@@ -18,6 +18,10 @@ export default {
   props: {
     type: {
       required: true,
+    },
+    showTopTagWhenOpen: {
+      type: Boolean,
+      default: true
     },
     initiallyCollapsed: {
       type: Boolean,
@@ -38,9 +42,9 @@ export default {
     },
     topTag() {
       if (this.isCollapsed && this.isObject) return '{}'
-      else if (this.isObject) return '{'
+      else if (this.isObject && this.showTopTagWhenOpen) return '{'
       else if (this.isCollapsed && this.isArray) return '[]'
-      else if (this.isArray) return '['
+      else if (this.isArray && this.showTopTagWhenOpen) return '['
       return null
     },
     bottomTag() {

@@ -1,13 +1,20 @@
 <template>
   <section>
+    <ObjectElement v-if="isObjectType"
+      :element="computedElement"
+      :initiallyCollapsed="initiallyCollapsed"
+      :name="name"
+    />
     <OtherElement v-if="isOtherType || !hasType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
-      />
+      :name="name"
+    />
   </section>
 </template>
 
 <script>
+import ObjectElement from './ObjectElement'
 import OtherElement from './OtherElement'
 
 export default {
@@ -16,6 +23,9 @@ export default {
     element: {
       type: Object,
       required: true,
+    },
+    name:{
+      type: String
     },
     // if schema were defined in top level definitions pass to any nested element in case it uses the def
     definitions: {
@@ -31,6 +41,7 @@ export default {
     }
   },
   components: {
+    ObjectElement,
     OtherElement
   },
   computed: {
