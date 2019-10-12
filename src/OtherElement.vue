@@ -11,7 +11,7 @@
       <template v-slot:content>
         <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples}}</span>
+        <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
 
         <template v-for="value in formatedValues" >
             <span v-bind:key="value">{{ value }}</span>
@@ -35,9 +35,6 @@ export default {
     element: {
       type: Object,
       required: true,
-      validator(value) {
-        return ['string', 'integer', 'number'].indexOf(value.type) > -1
-      }
     },
     initiallyCollapsed: {
       type: Boolean,
@@ -50,10 +47,20 @@ export default {
   components: {
     CollapsibleElement
   },
+  data() {
+    return {
+      baseNestedKeys: [
+        'description',
+        'default',
+        'description',
+      ]
+    }
+  },
   computed: {
     title() {
       var title = this.name ? (this.name + ': ') : ''
-      title += this.element.type
+      title += this.element.title ? (this.element.title + ' ') : ''
+      title += this.element.type || ''
       return title
     },
     hasNested() {
@@ -64,14 +71,14 @@ export default {
       return nested
     },
     nestedElementKeys() {
-      var keys = [
-        'description',
-        'default',
-        'description',
-      ]
-      return keys.concat(this.extraNestedElementKeys)
+      return this.baseNestedKeys.concat(this.extraNestedElementKeys)
     },
     extraNestedElementKeys() {
+      if (!this.hasType) {
+        return Object.keys(this.element).filter((key) => {
+          return this.baseNestedKeys.indexOf(key) == -1
+        })
+      }
       var keys = []
       if (this.isString) {
         keys.push(
@@ -140,14 +147,15 @@ export default {
         // Json Schema Draft 4 or no exclusives defined
         else {
           value = ''
+          var isExclusive = false
           if (this.element.minimum != null || this.element.exclusiveMinimum != null) {
-            var isExclusive = this.element.exclusiveMinimum != null
+            isExclusive = this.element.exclusiveMinimum != null
               && (this.element.minimum == null || this.element.minimum <= this.element.exclusiveMinimum)
             value += (isExclusive ? this.element.exclusiveMinimum : this.element.minimum)
                 + (isExclusive ? ' < value' : ' <= value')
           }
           if (this.element.maximum != null || this.element.exclusiveMaximum != null) {
-            var isExclusive = this.element.exclusiveMaximum != null
+            isExclusive = this.element.exclusiveMaximum != null
               && (this.element.maximum == null || this.element.maximum >= this.element.exclusiveMaximum)
             if (value.length == 0) value += 'value'
             value += (isExclusive ? ' < ' : ' <= ') + (isExclusive ? this.element.exclusiveMaximum : this.element.maximum)
@@ -158,6 +166,9 @@ export default {
       return values
     },
 
+    hasType() {
+      return this.element.type != null
+    },
     isString() {
       return this.element.type == 'string'
     },

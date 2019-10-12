@@ -1,26 +1,21 @@
 <template>
   <section>
-    <OtherElement v-if="this.isOther"
-      :element="this.element"
+    <OtherElement v-if="isOtherType || !hasType"
+      :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       />
   </section>
 </template>
 
 <script>
-import CollapsibleElement from './CollapsibleElement'
 import OtherElement from './OtherElement'
+
 export default {
   name: "SchemaElement",
   props: {
     element: {
       type: Object,
       required: true,
-      validator(value) {
-        if (!value.type) return false
-        // TODO additional validation? what else determines invalid element
-        return true;
-      }
     },
     // if schema were defined in top level definitions pass to any nested element in case it uses the def
     definitions: {
@@ -36,77 +31,36 @@ export default {
     }
   },
   components: {
-    CollapsibleElement,
     OtherElement
   },
-  data() {
-    return {
-      isCollapsed: this.initiallyCollapsed,
-      jsonSchemaKeyOptions: [
-        "type",
-        "required",
-        "description",
-        "title",
-        // object
-        "properties",
-        //array
-        "items",
-        "additionalItems",
-        "contains",
-        //conditional
-        "oneOf",
-        "anyOf",
-        "allOf",
-        "not",
-        "if",
-        "then",
-        "else",
-      ],
-      specialKeys: [
-        'title',
-        'name',
-        'type',
-        'description',
-        'default',
-        'examples'
-      ],
-    }
-  },
   computed: {
-    singleType() {
-      return typeof this.element.type == 'string'
-    },
-    title() {
-      let title = this.element.title ? this.element.title : this.element.name
-      if (title) title += ': '
-      if (!this.isObject && !this.isArray) {
-         title = title + this.element.type.toString()
+    computedElement() {
+      if (Array.isArray(this.element)) {
+        return this.element
       }
-      if (this.isObject && !this.hasNested) title += '{}'
-      if (this.isArray && !this.hasNested) title += '[]'
-      return title
+      else if (typeof this.element == 'object') {
+        // todo add in definitions here?
+        return this.element
+      }
+      return this.element
     },
-    keys() {
-      let keys = Object.keys(this.element)
-      return keys
+    hasType() {
+      return this.computedElement.type != null
     },
-    showingDetails() {
-      return this.hasNested && !this.isCollapsed
+    isSingleType() {
+      return typeof this.computedElement.type == 'string'
     },
-    hasNested() {
-      // show anything as nested except for type and name
-      if (this.keys.length == 1) return false
-      if (this.keys.length == 2 && this.keys.indexOf('name') != -1) return false
-      return true
+    isMultipleType() {
+      return typeof Array.isArray(this.computedElement.type)
     },
-    isArray() {
-      return this.singleType && this.element.type == 'array'
+    isArrayType() {
+      return this.isSingleType && this.computedElement.type == 'array'
     },
-    isObject() {
-      return this.singleType && this.element.type == 'object'
+    isObjectType() {
+      return this.isSingleType && this.computedElement.type == 'object'
     },
-    isOther() {
-      return this.singleType && !this.isArray && !this.isObject
+    isOtherType() {
+      return this.isSingleType && !this.isArrayType && !this.isObjectType
     }
   }
 }
