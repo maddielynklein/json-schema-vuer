@@ -1,5 +1,10 @@
 <template>
   <section>
+    <ArrayElement v-if="isArrayType"
+      :element="computedElement"
+      :initiallyCollapsed="initiallyCollapsed"
+      :name="name"
+    />
     <ObjectElement v-if="isObjectType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
@@ -15,6 +20,7 @@
 
 <script>
 import ObjectElement from './ObjectElement'
+import ArrayElement from './ArrayElement'
 import OtherElement from './OtherElement'
 
 export default {
@@ -42,6 +48,7 @@ export default {
   },
   components: {
     ObjectElement,
+    ArrayElement,
     OtherElement
   },
   computed: {
