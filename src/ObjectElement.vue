@@ -13,6 +13,7 @@
         <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
+        <span v-if="propertyCount != null" class="vueml-json-additional-props"> {{ propertyCount }}</span>
         <span v-if="element.additionalProperties != null" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} additional properties</span>
         
         <template v-if="propertyNames">
@@ -121,13 +122,23 @@
         if (this.element.propertyNames) {
           schema = {
             type: 'string',
-            title: 'property name validation'
+            title: 'property name validation:'
           }
           Object.keys(this.element.propertyNames).forEach((key) => {
             schema[key] = this.element.propertyNames[key]
           })
         }
         return schema
+      },
+      propertyCount() {
+        var value = ''
+        if (this.element.minProperties != null) value += this.element.minProperties + ' <= property count'
+        if (this.element.maxProperties!= null) {
+          if (value.length == 0) value += 'property count'
+          value += ' <= ' + this.element.maxProperties
+        }
+        if (value.length > 0) return value
+        return null
       }
     }
   }
