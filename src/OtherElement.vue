@@ -26,7 +26,7 @@
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
         <template v-for="combo in combinationKeys">
-          <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo}}:</span>
+          <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="vueml-json-details">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
               <template v-for="value in getFormattedValues(option)" >
@@ -46,13 +46,13 @@
       <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
       <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
       <span>
-          <template v-for="value in getFormattedValues(element)" >
-            <span v-bind:key="value">{{ value }}</span>
-          </template>
-          <template v-for="key in extraNestedElementKeys" >
-            <span v-bind:key="key" v-if="element[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
-          </template>
-        </span>
+        <template v-for="value in getFormattedValues(element)" >
+          <span v-bind:key="value">{{ value }}</span>
+        </template>
+        <template v-for="key in extraNestedElementKeys" >
+          <span v-bind:key="key" v-if="element[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
+        </template>
+      </span>
     </span>
   </section>
 </template>
@@ -115,7 +115,7 @@ export default {
         keys.push(
           'minLength',
           'maxLength',
-          'regex',
+          'pattern',
           'format',
           'contentMediaType',
           'contentEncoding',

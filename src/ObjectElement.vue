@@ -15,6 +15,10 @@
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
         <span v-if="element.additionalProperties != null" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} additional properties</span>
         
+        <template v-if="propertyNames">
+          <SchemaElement :element="propertyNames" :initiallyCollapsed="false"/>
+        </template>
+
         <template v-if="hasProperties">
           <SchemaElement v-for="key in propertyKeys" v-bind:key="key"
             :element="element.properties[key]"
@@ -111,6 +115,19 @@
           if (this.element[key] != null) nested = true
         })
         return nested
+      },
+      propertyNames() {
+        var schema = null
+        if (this.element.propertyNames) {
+          schema = {
+            type: 'string',
+            title: 'property name validation'
+          }
+          Object.keys(this.element.propertyNames).forEach((key) => {
+            schema[key] = this.element.propertyNames[key]
+          })
+        }
+        return schema
       }
     }
   }
