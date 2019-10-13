@@ -1,7 +1,7 @@
 <template>
   <section>
     <CollapsibleElement v-if="hasNested"
-      :type="element.type"
+      :type="'object'"
       :initiallyCollapsed="initiallyCollapsed"
       :showTopTagWhenOpen="!hasNestedDetails"
     >
@@ -13,8 +13,8 @@
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
         <span v-if="element.additionalProperties != null" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} Additional Properties Allowed</span>
         <span v-if="hasNestedDetails">{</span>
-        <template v-if="hasProperties" v-for="key in propertyKeys">
-          <SchemaElement v-bind:key="key"
+        <template v-if="hasProperties">
+          <SchemaElement v-for="key in propertyKeys" v-bind:key="key"
             :element="element.properties[key]"
             :name="key"
           />
@@ -37,7 +37,7 @@
         type: Object,
         required: true,
         validator(value) {
-          return value.type == 'object'
+          return value.type == 'object' || value.properties != null
         }
       },
       name: {

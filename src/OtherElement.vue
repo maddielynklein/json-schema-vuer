@@ -8,21 +8,35 @@
         <span> {{ title }}</span>
       </template>
 
+      <template v-slot:titleCollapse>
+        <span>
+          <template v-for="value in formatedValues" >
+            <span v-bind:key="value">{{ value }}</span>
+          </template>
+          <template v-for="key in extraNestedElementKeys" >
+            <span v-bind:key="key" v-if="element[key] != null && formatedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
+          </template>
+        </span>
+      </template>
+
       <template v-slot:content>
         <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
-
-        <template v-for="value in formatedValues" >
-            <span v-bind:key="value">{{ value }}</span>
-          </template>
-        <template v-for="key in extraNestedElementKeys" >
-            <span v-bind:key="key" v-if="element[key] != null && formatedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
-          </template>
       </template>
     </CollapsibleElement>
 
-    <span v-else>{{ title }}</span>
+    <span v-else>
+      <span>{{ title }}</span>
+      <span>
+          <template v-for="value in formatedValues" >
+            <span v-bind:key="value">{{ value }}</span>
+          </template>
+          <template v-for="key in extraNestedElementKeys" >
+            <span v-bind:key="key" v-if="element[key] != null && formatedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
+          </template>
+        </span>
+    </span>
   </section>
 </template>
 
@@ -65,7 +79,7 @@ export default {
     },
     hasNested() {
       var nested = false
-      this.nestedElementKeys.forEach((key) => {
+      this.baseNestedKeys.forEach((key) => {
         if (this.element[key] != null) nested = true
       })
       return nested
@@ -124,9 +138,9 @@ export default {
       var value = null
       if (this.isString) {
         value = ''
-        if (this.element.minLength != null) value += this.element.minLength + ' <= value.length'
+        if (this.element.minLength != null) value += this.element.minLength + ' <= length'
         if (this.element['maxLength'] != null) {
-          if (value.length == 0) value += 'value.length'
+          if (value.length == 0) value += 'length'
           value += ' <= ' + this.element['maxLength']
         }
         if (value.length > 0) values.push(value)
@@ -138,9 +152,9 @@ export default {
           || (this.element.exclusiveMaximum != null && typeof this.element.exclusiveMaximum == 'boolean'))
         {
           if (this.element.minimum != null) 
-            value += this.element.minimum + (this.element.exclusiveMinimum ? ' <' : ' <=') + ' value'
+            value += this.element.minimum + (this.element.exclusiveMinimum ? ' <' : ' <=') + ' x'
             if (this.element.maximum != null) {
-              if (value.length == 0) value += 'value'
+              if (value.length == 0) value += 'x'
               value += (this.element.exclusiveMaximum ? ' < ' : ' <= ') + this.element.maximum
             }
         }

@@ -5,12 +5,12 @@
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
     />
-    <ObjectElement v-if="isObjectType"
+    <ObjectElement v-else-if="isObjectType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
     />
-    <OtherElement v-if="isOtherType || !hasType"
+    <OtherElement v-else-if="isOtherType || !hasType || isMultipleType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import CollapsibleElement from './CollapsibleElement'
 import ObjectElement from './ObjectElement'
 import ArrayElement from './ArrayElement'
 import OtherElement from './OtherElement'
@@ -47,20 +48,20 @@ export default {
     }
   },
   components: {
+    CollapsibleElement,
     ObjectElement,
     ArrayElement,
     OtherElement
   },
   computed: {
     computedElement() {
-      if (Array.isArray(this.element)) {
-        return this.element
-      }
-      else if (typeof this.element == 'object') {
-        // todo add in definitions here?
-        return this.element
+      if (!this.element.type) {
+        //if (this.element.properties) this.element.type
       }
       return this.element
+    },
+    isCombination() {
+
     },
     hasType() {
       return this.computedElement.type != null
@@ -72,10 +73,10 @@ export default {
       return typeof Array.isArray(this.computedElement.type)
     },
     isArrayType() {
-      return this.isSingleType && this.computedElement.type == 'array'
+      return this.computedElement.type == 'array' || this.computedElement.items != null
     },
     isObjectType() {
-      return this.isSingleType && this.computedElement.type == 'object'
+      return this.computedElement.type == 'object' || this.computedElement.properties != null
     },
     isOtherType() {
       return this.isSingleType && !this.isArrayType && !this.isObjectType
