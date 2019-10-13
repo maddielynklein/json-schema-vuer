@@ -5,18 +5,20 @@
       :type="element.type"
     >
       <template v-slot:title>
-        <span> {{ title }}</span>
+        <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
+        <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+        <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
       </template>
 
       <template v-slot:titleCollapse>
-        <span>
+        <template>
           <template v-for="value in formatedValues" >
             <span v-bind:key="value">{{ value }}</span>
           </template>
           <template v-for="key in extraNestedElementKeys" >
             <span v-bind:key="key" v-if="element[key] != null && formatedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
           </template>
-        </span>
+        </template>
       </template>
 
       <template v-slot:content>
@@ -27,7 +29,9 @@
     </CollapsibleElement>
 
     <span v-else>
-      <span>{{ title }}</span>
+      <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
+      <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+      <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
       <span>
           <template v-for="value in formatedValues" >
             <span v-bind:key="value">{{ value }}</span>
@@ -71,12 +75,6 @@ export default {
     }
   },
   computed: {
-    title() {
-      var title = this.name ? (this.name + ': ') : ''
-      title += this.element.title ? (this.element.title + ' ') : ''
-      title += this.element.type || ''
-      return title
-    },
     hasNested() {
       var nested = false
       this.baseNestedKeys.forEach((key) => {
