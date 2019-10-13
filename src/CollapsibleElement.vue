@@ -4,7 +4,7 @@
       <span :class="{'vueml-json-collapsed' : isCollapsed, 'vueml-json-open': !isCollapsed}" />
       <slot name="title"></slot>
       {{ topTag }}
-      <slot name="titleCollapse" v-if="!isCollapsed" />
+      <slot name="titleOpenEnd" v-if="!isCollapsed" />
     </span>
     <div v-show="!isCollapsed" class="vueml-json-details">
       <slot name="content"></slot>

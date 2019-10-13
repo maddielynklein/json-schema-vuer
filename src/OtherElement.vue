@@ -10,7 +10,7 @@
         <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
       </template>
 
-      <template v-slot:titleCollapse>
+      <template v-slot:titleOpenEnd>
         <template>
           <template v-for="value in getFormattedValues(element)" >
             <span v-bind:key="value">{{ value }}</span>
@@ -180,11 +180,11 @@ export default {
           || (rules.exclusiveMaximum != null && typeof rules.exclusiveMaximum == 'boolean'))
         {
           if (rules.minimum != null) 
-            value += rules.minimum + (rules.exclusiveMinimum ? ' <' : ' <=') + ' x'
+            value += (rules.exclusiveMinimum ? '(' : ' [') + rules.minimum + ' ... '
             if (rules.maximum != null) {
-              if (value.length == 0) value += 'x'
-              value += (rules.exclusiveMaximum ? ' < ' : ' <= ') + rules.maximum
-            }
+              if (value.length == 0) value += '( ...'
+              value += rules.maximum + (rules.exclusiveMaximum ? ')' : ']')
+            } else if (value.length > 0) value += ' )'
         }
         // Json Schema Draft 4 or no exclusives defined
         else {
@@ -193,15 +193,14 @@ export default {
           if (rules.minimum != null || rules.exclusiveMinimum != null) {
             isExclusive = rules.exclusiveMinimum != null
               && (rules.minimum == null || rules.minimum <= rules.exclusiveMinimum)
-            value += (isExclusive ? rules.exclusiveMinimum : rules.minimum)
-                + (isExclusive ? ' < value' : ' <= value')
+            value += (isExclusive ? '(' : '[') + (isExclusive ? rules.exclusiveMinimum : rules.minimum) + ' ... '
           }
           if (rules.maximum != null || rules.exclusiveMaximum != null) {
             isExclusive = rules.exclusiveMaximum != null
               && (rules.maximum == null || rules.maximum >= rules.exclusiveMaximum)
-            if (value.length == 0) value += 'value'
-            value += (isExclusive ? ' < ' : ' <= ') + (isExclusive ? rules.exclusiveMaximum : rules.maximum)
-          }  
+            if (value.length == 0) value += '( ...'
+            value += (isExclusive ? rules.exclusiveMaximum : rules.maximum) + (isExclusive ? ')' : ']' )
+          } else if (value.length > 0) value += ' )' 
         }
         if (value.length > 0) values.push(value)
       }
