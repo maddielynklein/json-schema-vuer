@@ -3,7 +3,6 @@
     <CollapsibleElement v-if="hasNested"
       :type="'array'"
       :initiallyCollapsed="initiallyCollapsed"
-      :showTopTagWhenOpen="!hasNestedDetails"
     >
       <template v-slot:title>{{ title }}</template>
 
@@ -12,7 +11,6 @@
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
         <span v-if="element.additionalItems != null" class="vueml-json-additional-props"> {{ element.additionalItems ? '' : 'No '}} Additional Items Allowed</span>
-        <span v-if="hasNestedDetails">{</span>
         <template v-if="hasItems">
           <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
             :element="item"
