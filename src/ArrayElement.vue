@@ -34,10 +34,17 @@
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="vueml-json-details">
+          <div v-bind:key="combo" class="vueml-json-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
               <ArrayElement :element="option" :initiallyCollapsed="false" />
             </span>
+          </div>
+        </template>
+
+        <template v-for="condition in conditionalKeys">
+          <span v-bind:key="condition+'-label'" v-if="element[condition]">{{ condition }}:</span>
+          <div v-bind:key="condition" class="vueml-json-details" v-if="element[condition]">         
+              <ArrayElement :element="element[condition]" :initiallyCollapsed="false" />
           </div>
         </template>
       </template>
@@ -61,9 +68,6 @@
       element: {
         type: Object,
         required: true,
-        validator(value) {
-          return value.type == 'array' || value.items != null
-        }
       },
       name: {
         type: String
@@ -95,7 +99,12 @@
           'allOf',
           'oneOf',
           'not'
-        ]
+        ],
+        conditionalKeys: [
+          'if',
+          'then',
+          'else'
+        ],
       }
     },
     computed: {
@@ -113,7 +122,7 @@
       },
       hasNestedDetails() {
         var nested = false
-        this.nestedElementKeys.concat(this.combinationKeys).forEach((key) => {
+        this.nestedElementKeys.concat(this.combinationKeys).concat(this.conditionalKeys).forEach((key) => {
           if (this.element[key] != null) nested = true
         })
         return nested

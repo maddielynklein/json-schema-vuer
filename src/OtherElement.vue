@@ -25,6 +25,7 @@
         <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
+
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="vueml-json-details">
@@ -36,6 +37,18 @@
                 <span v-bind:key="key" v-if="option[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{option[key]}}</span>
               </template>
             </span>
+          </div>
+        </template>
+
+        <template v-for="condition in conditionalKeys">
+          <span v-bind:key="condition+'-label'" v-if="element[condition]">{{ condition }}:</span>
+          <div v-bind:key="condition" class="vueml-json-details" v-if="element[condition]">
+            <template v-for="value in getFormattedValues(element[condition])" >
+              <span v-bind:key="value">{{ value }}</span>
+            </template>
+            <template v-for="key in extraNestedElementKeys" >
+              <span v-bind:key="key" v-if="element[condition][key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[condition][key]}}</span>
+            </template>
           </div>
         </template>
       </template>
@@ -80,7 +93,7 @@ export default {
   },
   data() {
     return {
-      baseNestedKeys: [
+      detailKeys: [
         'description',
         'default',
         'description',
@@ -90,19 +103,27 @@ export default {
         'allOf',
         'oneOf',
         'not'
-      ]
+      ],
+      conditionalKeys: [
+        'if',
+        'then',
+        'else'
+      ],
     }
   },
   computed: {
+    baseNestedKeys() {
+      return this.detailKeys.concat(this.combinationKeys).concat(this.conditionalKeys)
+    },
     hasNested() {
       var nested = false
-      this.baseNestedKeys.concat(this.combinationKeys).forEach((key) => {
+      this.baseNestedKeys.forEach((key) => {
         if (this.element[key] != null) nested = true
       })
       return nested
     },
     nestedElementKeys() {
-      return this.baseNestedKeys.concat(this.combinationKeys).concat(this.extraNestedElementKeys)
+      return this.baseNestedKeys.concat(this.extraNestedElementKeys)
     },
     extraNestedElementKeys() {
       if (!this.hasType) {
@@ -161,10 +182,16 @@ export default {
     }
   },
   methods: {
+    ruleIsString(rule) {
+      return rule && rule.type == 'string'
+    },
+    ruleIsNumeric(rule) {
+      return rule && (rule.type == 'integer' || rule.type == 'number')
+    },
     getFormattedValues(rules) {
       var values = []
       var value = null
-      if (this.isString) {
+      if (this.ruleIsString(rules)) {
         value = ''
         if (rules.minLength != null) value += rules.minLength + ' <= length'
         if (rules['maxLength'] != null) {
@@ -173,7 +200,7 @@ export default {
         }
         if (value.length > 0) values.push(value)
       }
-      if (this.isNumeric){
+      if (this.ruleIsNumeric(rules)){
         value = ''
         // Json Schema Draft 7
         if ((rules.exclusiveMinimum != null && typeof rules.exclusiveMinimum == 'boolean')

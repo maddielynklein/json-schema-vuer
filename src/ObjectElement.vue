@@ -14,7 +14,7 @@
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
         <span v-if="propertyCount != null" class="vueml-json-additional-props"> {{ propertyCount }}</span>
-        <span v-if="element.additionalProperties != null" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} additional properties</span>
+        <span v-if="element.additionalProperties != null && typeof element.additionalProperties == 'boolean'" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} additional properties</span>
         
         <template v-if="propertyNames">
           <SchemaElement :element="propertyNames" :initiallyCollapsed="false"/>
@@ -26,13 +26,24 @@
             :name="key"
           />
         </template>
+
+        <template v-if="additionalProperties">
+          <SchemaElement :element="additionalProperties" :initiallyCollapsed="false"/>
+        </template>
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="vueml-json-details">
+          <div v-bind:key="combo" class="vueml-json-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
               <ObjectElement :element="option" :initiallyCollapsed="false" />
             </span>
+          </div>
+        </template>
+
+        <template v-for="condition in conditionalKeys">
+          <span v-bind:key="condition+'-label'" v-if="element[condition]">{{ condition }}:</span>
+          <div v-bind:key="condition" class="vueml-json-details" v-if="element[condition]">
+            <ObjectElement :element="element[condition]" :initiallyCollapsed="false" />
           </div>
         </template>
       </template>
@@ -56,9 +67,6 @@
       element: {
         type: Object,
         required: true,
-        validator(value) {
-          return value.type == 'object' || value.properties != null
-        }
       },
       name: {
         type: String
@@ -90,7 +98,12 @@
           'allOf',
           'oneOf',
           'not'
-        ]
+        ],
+        conditionalKeys: [
+          'if',
+          'then',
+          'else'
+        ],
       }
     },
     computed: {
@@ -112,7 +125,7 @@
       },
       hasNestedDetails() {
         var nested = false
-        this.nestedElementKeys.concat(this.combinationKeys).forEach((key) => {
+        this.nestedElementKeys.concat(this.combinationKeys).concat(this.conditionalKeys).forEach((key) => {
           if (this.element[key] != null) nested = true
         })
         return nested
@@ -126,6 +139,18 @@
           }
           Object.keys(this.element.propertyNames).forEach((key) => {
             schema[key] = this.element.propertyNames[key]
+          })
+        }
+        return schema
+      },
+      additionalProperties() {
+        var schema = null
+        if (this.element.additionalProperties && typeof this.element.additionalProperties == 'object') {
+          schema = {
+            title: 'additional properties:'
+          }
+          Object.keys(this.element.additionalProperties).forEach((key) => {
+            schema[key] = this.element.additionalProperties[key]
           })
         }
         return schema
