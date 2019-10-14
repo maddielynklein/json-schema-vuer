@@ -9,15 +9,17 @@
         <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
       </template>
 
+      <template v-slot:titleOpenEnd>
+        <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+      </template>
+
       <template v-slot:content>
         <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
-        <span v-if="propertyCount != null" class="vueml-json-additional-props"> {{ propertyCount }}</span>
-        <span v-if="element.additionalProperties != null && typeof element.additionalProperties == 'boolean'" class="vueml-json-additional-props"> {{ element.additionalProperties ? '' : 'No '}} additional properties</span>
         
-        <template v-if="propertyNames">
-          <SchemaElement :element="propertyNames" :initiallyCollapsed="false"/>
+        <template v-if="propertyNamesSchema">
+          <SchemaElement :element="propertyNamesSchema" :initiallyCollapsed="false"/>
         </template>
 
         <template v-if="hasProperties">
@@ -27,23 +29,23 @@
           />
         </template>
 
-        <template v-if="additionalProperties">
-          <SchemaElement :element="additionalProperties" :initiallyCollapsed="false"/>
+        <template v-if="additionalPropertiesSchema">
+          <SchemaElement :element="additionalPropertiesSchema" :initiallyCollapsed="false"/>
         </template>
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="vueml-json-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <ObjectElement :element="option" :initiallyCollapsed="false" />
+              <ObjectElement :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
             </span>
           </div>
         </template>
 
         <template v-for="condition in conditionalKeys">
-          <span v-bind:key="condition+'-label'" v-if="element[condition]">{{ condition }}:</span>
-          <div v-bind:key="condition" class="vueml-json-details" v-if="element[condition]">
-            <ObjectElement :element="element[condition]" :initiallyCollapsed="false" />
+          <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">
+            <span v-if="element[condition]">{{ condition }}:</span>
+            <ObjectElement :element="element[condition]" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
           </div>
         </template>
       </template>
@@ -52,7 +54,9 @@
     <span v-else>
       <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
       <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
-      <span>{}</span>
+      <span v-if="showNonNestedBrackets">{</span>
+      <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+      <span v-if="showNonNestedBrackets">}</span>
     </span>   
   </section>
 </template>
@@ -74,6 +78,10 @@
       initiallyCollapsed: {
         type: Boolean,
         default: true
+      },
+      showNonNestedBrackets:{
+        type: Boolean,
+        default: true
       }
     },
     components: {
@@ -87,10 +95,6 @@
           'default',
           'examples',
 
-          'additionalProperties',
-          'propertyNames',
-          'minProperties',
-          'maxProperties',
           'dependencies'
         ],
         combinationKeys: [
@@ -114,7 +118,7 @@
         return title
       },
       hasNested() {
-        return this.hasProperties || this.hasNestedDetails
+        return this.hasProperties || this.hasNestedDetails|| this.propertyNamesSchema || this.additionalPropertiesSchema
       },
       hasProperties() {
         return this.propertyKeys.length > 0
@@ -130,7 +134,7 @@
         })
         return nested
       },
-      propertyNames() {
+      propertyNamesSchema() {
         var schema = null
         if (this.element.propertyNames) {
           schema = {
@@ -143,7 +147,7 @@
         }
         return schema
       },
-      additionalProperties() {
+      additionalPropertiesSchema() {
         var schema = null
         if (this.element.additionalProperties && typeof this.element.additionalProperties == 'object') {
           schema = {
@@ -155,6 +159,12 @@
         }
         return schema
       },
+      formattedValues() {
+        var values = [];
+        if (this.propertyCount) values.push(this.propertyCount)
+        if (this.additionalPropertiesDisplay) values.push(this.additionalPropertiesDisplay)
+        return values
+      },
       propertyCount() {
         var value = ''
         if (this.element.minProperties != null) value += this.element.minProperties + ' <= property count'
@@ -163,6 +173,12 @@
           value += ' <= ' + this.element.maxProperties
         }
         if (value.length > 0) return value
+        return null
+      },
+      additionalPropertiesDisplay() {
+        if (this.element.additionalProperties !== null && typeof this.element.additionalProperties == 'boolean') {
+          return (this.element.additionalProperties ? '' : 'No ') + 'additional properties'
+        }
         return null
       }
     }
