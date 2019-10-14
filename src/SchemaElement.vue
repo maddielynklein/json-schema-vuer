@@ -1,15 +1,34 @@
 <template>
   <section>
-    <ArrayElement v-if="isArrayType"
+    <template v-if="isCombination">
+      <template v-for="combo in combinationKeys">
+         <CollapsibleElement v-bind:key="combo"
+           v-if="computedElement[combo] != null && computedElement[combo].length > 0" 
+            :initiallyCollapsed="initiallyCollapsed">
+           <template v-slot:title>
+             <span >{{ combo }}:</span>
+           </template>
+
+           <template v-slot:content>
+             <SchemaElement v-for="(schema,index) in computedElement[combo]" v-bind:key="index"
+               :element="schema"/>
+           </template>
+        </CollapsibleElement>
+      </template>
+    </template>
+
+    <ArrayElement v-else-if="isArrayType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
     />
+
     <ObjectElement v-else-if="isObjectType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
     />
+
     <OtherElement v-else-if="isOtherType || !hasType || isMultipleType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
@@ -53,6 +72,16 @@ export default {
     ArrayElement,
     OtherElement
   },
+  data() {
+    return {
+      combinationKeys: [
+        'anyOf',
+        'allOf',
+        'oneOf',
+        'not'
+      ],
+    }
+  },
   computed: {
     computedElement() {
       if (!this.element.type) {
@@ -61,7 +90,11 @@ export default {
       return this.element
     },
     isCombination() {
-
+      var hasCombo = false
+      this.combinationKeys.forEach((key) => {
+        if (this.computedElement[key] != null && this.computedElement[key].length > 0) hasCombo = true
+      })
+      return hasCombo && !this.computedElement.type
     },
     hasType() {
       return this.computedElement.type != null
@@ -93,16 +126,17 @@ export default {
   .vueml-json-details {
     display: flex;
     flex-direction: column;
-    margin-left: 1em;
+    margin-left: 2em;
+  }
+  .vueml-json-conditional {
+    display: flex;
   }
 
   .vueml-json-collapsed:after {
     content: '\25B8';
-    padding: 0.25em;
   }
   .vueml-json-open:after {
     content: '\25BE';
-    padding: 0.25em;
   }
 
   .vueml-json-description,
@@ -118,6 +152,25 @@ export default {
   }
   .vueml-json-examples {
     color: cornflowerblue;
+  }
+
+  .vueml-json-type {
+    color: green;
+  }
+  .vueml-json-prop-name {
+    color: blue;
+  }
+
+  .vueml-json-schema span {
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+  }
+
+  .vueml-json-schema code {
+    background: gainsboro;
+    border: 0.1em solid grey;
+    padding: 0.1em 0.25em;
+    border-radius: 2px;
   }
 
 </style>
