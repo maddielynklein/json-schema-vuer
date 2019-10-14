@@ -7,10 +7,11 @@
       <template v-slot:title>
         <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
         <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
-        <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
+        <span v-if="constantValue">{{ constantValue }}</span>
+        <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
       </template>
 
-      <template v-slot:titleOpenEnd>
+      <template v-slot:titleOpenEnd v-if="!constantValue">
         <template>
           <template v-for="value in getFormattedValues(element)" >
             <span v-bind:key="value">{{ value }}</span>
@@ -27,32 +28,34 @@
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
 
-        <template v-for="combo in combinationKeys">
-          <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="vueml-json-details">
-            <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <template v-for="value in getFormattedValues(option)" >
+        <template v-if="!constantValue">
+          <template v-for="combo in combinationKeys">
+            <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
+            <div v-bind:key="combo" class="vueml-json-details">
+              <span v-for="(option,index) in element[combo]" v-bind:key="index">
+                <template v-for="value in getFormattedValues(option)" >
+                  <span v-bind:key="value">{{ value }}</span>
+                </template>
+                <template v-for="key in extraNestedElementKeys" >
+                  <span v-bind:key="key" v-if="key == 'pattern' && option[key] != null"><code>{{option[key]}}</code></span>
+                  <span v-bind:key="key" v-else-if="option[key] != null">{{option[key]}}</span>
+                </template>
+              </span>
+            </div>
+          </template>
+
+          <template v-for="condition in conditionalKeys">
+            <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">
+              <span>{{ condition }}:</span>
+              <template v-for="value in getFormattedValues(element[condition])" >
                 <span v-bind:key="value">{{ value }}</span>
               </template>
               <template v-for="key in extraNestedElementKeys" >
-                <span v-bind:key="key" v-if="key == 'pattern' && option[key] != null"><code>{{option[key]}}</code></span>
-                <span v-bind:key="key" v-else-if="option[key] != null">{{option[key]}}</span>
+                <span v-bind:key="key" v-if="key == 'pattern' && element[condition][key] != null"><code>{{element[condition][key]}}</code></span>
+                <span v-bind:key="key" v-else-if="element[condition][key] != null">{{element[condition][key]}}</span>
               </template>
-            </span>
-          </div>
-        </template>
-
-        <template v-for="condition in conditionalKeys">
-          <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">
-            <span>{{ condition }}:</span>
-            <template v-for="value in getFormattedValues(element[condition])" >
-              <span v-bind:key="value">{{ value }}</span>
-            </template>
-            <template v-for="key in extraNestedElementKeys" >
-              <span v-bind:key="key" v-if="key == 'pattern' && element[condition][key] != null"><code>{{element[condition][key]}}</code></span>
-              <span v-bind:key="key" v-else-if="element[condition][key] != null">{{element[condition][key]}}</span>
-            </template>
-          </div>
+            </div>
+          </template>
         </template>
       </template>
     </CollapsibleElement>
@@ -60,8 +63,9 @@
     <span v-else>
       <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
       <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
-      <span v-if="element.type" class="vueml-json-type">{{ element.type }}</span>
-      <span>
+      <span v-if="constantValue">{{ constantValue }}</span>
+      <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
+      <span v-if="!constantValue">
         <template v-for="value in getFormattedValues(element)" >
           <span v-bind:key="value">{{ value }}</span>
         </template>
@@ -115,6 +119,14 @@ export default {
     }
   },
   computed: {
+    constantValue() {
+      // call to string for boolean defaults
+      var val = null
+      if (this.element.const != null) val = this.element.const.toString()
+      if (this.element.enum && this.element.enum.length == 1) val = this.element.enum[0].toString()
+      if (val && this.isString) val = '"' + val + '"'
+      return val
+    },
     baseNestedKeys() {
       return this.detailKeys.concat(this.combinationKeys).concat(this.conditionalKeys)
     },
