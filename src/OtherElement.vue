@@ -16,7 +16,8 @@
             <span v-bind:key="value">{{ value }}</span>
           </template>
           <template v-for="key in extraNestedElementKeys" >
-            <span v-bind:key="key" v-if="element[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
+            <span v-bind:key="key" v-if="key == 'pattern' && element[key] != null"><code>{{element[key]}}</code></span>
+            <span v-bind:key="key" v-else-if="element[key] != null">{{element[key]}}</span>
           </template>
         </template>
       </template>
@@ -34,7 +35,8 @@
                 <span v-bind:key="value">{{ value }}</span>
               </template>
               <template v-for="key in extraNestedElementKeys" >
-                <span v-bind:key="key" v-if="option[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{option[key]}}</span>
+                <span v-bind:key="key" v-if="key == 'pattern' && option[key] != null"><code>{{option[key]}}</code></span>
+                <span v-bind:key="key" v-else-if="option[key] != null">{{option[key]}}</span>
               </template>
             </span>
           </div>
@@ -47,7 +49,8 @@
               <span v-bind:key="value">{{ value }}</span>
             </template>
             <template v-for="key in extraNestedElementKeys" >
-              <span v-bind:key="key" v-if="element[condition][key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[condition][key]}}</span>
+              <span v-bind:key="key" v-if="key == 'pattern' && element[condition][key] != null"><code>{{element[condition][key]}}</code></span>
+              <span v-bind:key="key" v-else-if="element[condition][key] != null">{{element[condition][key]}}</span>
             </template>
           </div>
         </template>
@@ -63,7 +66,7 @@
           <span v-bind:key="value">{{ value }}</span>
         </template>
         <template v-for="key in extraNestedElementKeys" >
-          <span v-bind:key="key" v-if="element[key] != null && formattedKeys.indexOf(key) == -1">{{key}}: {{element[key]}}</span>
+          <span v-bind:key="key" v-if="element[key] != null">{{key}}: {{element[key]}}</span>
         </template>
       </span>
     </span>
@@ -134,8 +137,6 @@ export default {
       var keys = []
       if (this.isString) {
         keys.push(
-          'minLength',
-          'maxLength',
           'pattern',
           'format',
           'contentMediaType',
@@ -146,27 +147,6 @@ export default {
         keys.push(
           'multipleOf',
           'minimum',
-          'exclusiveMinimum',
-          'maximum',
-          'exclusiveMaximum'
-        );
-      }
-      return keys
-    },
-    formattedKeys() {
-      var keys = []
-      if (this.isString) {
-        keys.push(
-          'minLength',
-          'maxLength',
-        )
-      }
-      if (this.isNumeric) {
-        keys.push(
-          'minimum',
-          'exclusiveMinimum',
-          'maximum',
-          'exclusiveMaximum'
         );
       }
       return keys
