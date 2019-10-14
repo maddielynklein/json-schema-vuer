@@ -41,8 +41,8 @@
         </template>
 
         <template v-for="condition in conditionalKeys">
-          <span v-bind:key="condition+'-label'" v-if="element[condition]">{{ condition }}:</span>
-          <div v-bind:key="condition" class="vueml-json-details" v-if="element[condition]">
+          <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">
+            <span>{{ condition }}:</span>
             <template v-for="value in getFormattedValues(element[condition])" >
               <span v-bind:key="value">{{ value }}</span>
             </template>
@@ -182,16 +182,10 @@ export default {
     }
   },
   methods: {
-    ruleIsString(rule) {
-      return rule && rule.type == 'string'
-    },
-    ruleIsNumeric(rule) {
-      return rule && (rule.type == 'integer' || rule.type == 'number')
-    },
     getFormattedValues(rules) {
       var values = []
       var value = null
-      if (this.ruleIsString(rules)) {
+      if (this.isString) {
         value = ''
         if (rules.minLength != null) value += rules.minLength + ' <= length'
         if (rules['maxLength'] != null) {
@@ -200,7 +194,7 @@ export default {
         }
         if (value.length > 0) values.push(value)
       }
-      if (this.ruleIsNumeric(rules)){
+      if (this.isNumeric){
         value = ''
         // Json Schema Draft 7
         if ((rules.exclusiveMinimum != null && typeof rules.exclusiveMinimum == 'boolean')
