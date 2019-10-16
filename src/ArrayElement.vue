@@ -19,12 +19,18 @@
         <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
         <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
 
-        <template v-if="hasItems">
-          <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
-            :element="item"
-          />
-        </template>
-
+        
+        <section v-if="hasItems" class="vueml-json-element">
+          <span><strong>items:</strong></span>
+          <CollapsibleElement v-if="element.items.length > 1" type="array" :initiallyCollapsed="false">
+            <template v-slot:content>
+              <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
+                :element="item"
+              />
+            </template>
+          </CollapsibleElement>
+          <SchemaElement v-else :element="element.items[0]" />
+        </section>
 
         <template v-if="additionalItemsSchema">
           <SchemaElement :element="additionalItemsSchema" :initiallyCollapsed="true"/>
