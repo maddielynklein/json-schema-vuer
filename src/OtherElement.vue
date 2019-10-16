@@ -99,7 +99,8 @@
           <span v-bind:key="value">{{ value }}</span>
         </template>
         <template v-for="key in extraNestedElementKeys" >
-          <span v-bind:key="key" v-if="element[key] != null">{{key}}: {{element[key]}}</span>
+          <span v-bind:key="key" v-if="key == 'pattern' && element[key] != null"><code>{{element[key]}}</code></span>
+          <span v-bind:key="key" v-else-if="element[key] != null">{{key}}: {{element[key]}}</span>
         </template>
       </span>
     </span>
@@ -186,7 +187,6 @@ export default {
       if (this.isNumeric) {
         keys.push(
           'multipleOf',
-          'minimum',
         );
       }
       return keys
@@ -218,11 +218,11 @@ export default {
       var value = null
       if (this.isString) {
         value = ''
-        if (rules.minLength != null) value += rules.minLength + ' <= length'
+        if (rules.minLength != null) value += '( ' + rules.minLength + ' ... '
         if (rules['maxLength'] != null) {
-          if (value.length == 0) value += 'length'
-          value += ' <= ' + rules['maxLength']
-        }
+          if (value.length == 0) value += '( ...'
+          value += rules['maxLength'] + ' )'
+        } else if (value.length > 0)value += ' )'
         if (value.length > 0) values.push(value)
       }
       if (this.isNumeric){

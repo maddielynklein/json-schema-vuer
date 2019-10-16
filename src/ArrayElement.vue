@@ -10,6 +10,7 @@
       </template>
 
       <template v-slot:titleOpenEnd>
+        <span/>
         <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
       </template>
 
@@ -27,6 +28,10 @@
 
         <template v-if="additionalItemsSchema">
           <SchemaElement :element="additionalItemsSchema" :initiallyCollapsed="true"/>
+        </template>
+
+        <template v-if="containsSchema">
+          <SchemaElement :element="containsSchema" :initiallyCollapsed="true"/>
         </template>
         
         <template v-for="combo in combinationKeys">
@@ -140,6 +145,18 @@
           }
           Object.keys(this.element.additionalItems).forEach((key) => {
             schema[key] = this.element.additionalItems[key]
+          })
+        }
+        return schema
+      },
+      containsSchema() {
+        var schema = null
+        if (this.element.contains && typeof this.element.contains == 'object') {
+          schema = {
+            title: 'contains:'
+          }
+          Object.keys(this.element.contains).forEach((key) => {
+            schema[key] = this.element.contains[key]
           })
         }
         return schema

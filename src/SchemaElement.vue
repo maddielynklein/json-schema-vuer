@@ -159,7 +159,7 @@ export default {
   .vueml-json-description,
   .vueml-json-default,
   .vueml-json-examples {
-    font-size: 0.8em;
+    font-size: 0.85rem;
   }
   .vueml-json-description {
     color: grey;
@@ -181,9 +181,8 @@ export default {
     color: blue;
   }
   
-
   .vueml-json-schema span {
-    padding-right: 0.25em;
+    padding-right: 0.5em;
   }
 
   .vueml-json-schema code {

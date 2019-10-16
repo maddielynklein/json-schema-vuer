@@ -10,6 +10,7 @@
       </template>
 
       <template v-slot:titleOpenEnd>
+        <span/>
         <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
       </template>
 
@@ -174,11 +175,11 @@
       },
       propertyCount() {
         var value = ''
-        if (this.element.minProperties != null) value += this.element.minProperties + ' <= property count'
+        if (this.element.minProperties != null) value += '( ' + this.element.minProperties + ' ... '
         if (this.element.maxProperties!= null) {
-          if (value.length == 0) value += 'property count'
-          value += ' <= ' + this.element.maxProperties
-        }
+          if (value.length == 0) value += '( ... '
+          value += this.element.maxProperties + ' )'
+        } else if (value.length > 0) value+= ' )'
         if (value.length > 0) return value
         return null
       },
