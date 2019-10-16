@@ -1,11 +1,11 @@
 <template>
-  <section>
+  <section class="vueml-json-element">
+    <span v-if="name" class="vueml-json-prop-name"><span class="vueml-json-required" v-if="required">*</span>{{ name }}:</span>
     <CollapsibleElement v-if="hasNested"
       :type="'array'"
       :initiallyCollapsed="initiallyCollapsed"
     >
       <template v-slot:title>
-        <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
         <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
       </template>
 
@@ -26,14 +26,14 @@
 
 
         <template v-if="additionalItemsSchema">
-          <SchemaElement :element="additionalItemsSchema" :initiallyCollapsed="false"/>
+          <SchemaElement :element="additionalItemsSchema" :initiallyCollapsed="true"/>
         </template>
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="vueml-json-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <ArrayElement :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+              <ArrayElement :element="option" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
             </span>
           </div>
         </template>
@@ -41,14 +41,13 @@
         <template v-for="condition in conditionalKeys">
           <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">  
               <span v-if="element[condition]">{{ condition }}:</span> 
-              <ArrayElement :element="element[condition]" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+              <ArrayElement :element="element[condition]" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
           </div>
         </template>
       </template>
     </CollapsibleElement> 
 
     <span v-else>
-      <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
       <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
       <span v-if="showNonNestedBrackets">[</span>
       <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
@@ -70,6 +69,10 @@
       },
       name: {
         type: String
+      },
+      required: {
+        type: Boolean,
+        default: false
       },
       initiallyCollapsed: {
         type: Boolean,

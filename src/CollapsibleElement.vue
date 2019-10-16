@@ -9,7 +9,7 @@
     <div v-show="!isCollapsed" class="vueml-json-details">
       <slot name="content"></slot>
     </div>
-    <span v-if="bottomTag">{{ bottomTag }}</span>
+    <span v-if="bottomTag"><span class="vueml-json-collapsed hidden"></span>{{ bottomTag }}</span>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   name: 'CollapsibleElement',
   props: {
     type: {
-      required: true,
+      type: String,
     },
     initiallyCollapsed: {
       type: Boolean,

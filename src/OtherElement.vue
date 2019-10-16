@@ -1,11 +1,11 @@
 <template>
-  <section>
+  <section class="vueml-json-element">
+    <span v-if="name" class="vueml-json-prop-name"><span class="vueml-json-required" v-if="required">*</span>{{ name }}:</span>
     <CollapsibleElement v-if="hasNested"
       :initiallyCollapsed="initiallyCollapsed"
       :type="element.type"
     >
       <template v-slot:title>
-        <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
         <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
         <span v-if="constantValue">{{ constantValue }}</span>
         <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
@@ -91,7 +91,6 @@
     </CollapsibleElement>
 
     <span v-else>
-      <span v-if="name" class="vueml-json-prop-name">{{ name }}:</span>
       <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
       <span v-if="constantValue">{{ constantValue }}</span>
       <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
@@ -123,6 +122,10 @@ export default {
     },
     name: {
       type: String
+    },
+    required: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

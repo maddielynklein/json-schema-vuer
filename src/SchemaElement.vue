@@ -21,18 +21,21 @@
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
+      :required="required"
     />
 
     <ObjectElement v-else-if="isObjectType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
+      :required="required"
     />
 
     <OtherElement v-else-if="isOtherType || !hasType || isMultipleType"
       :element="computedElement"
       :initiallyCollapsed="initiallyCollapsed"
       :name="name"
+      :required="required"
     />
   </section>
 </template>
@@ -52,6 +55,10 @@ export default {
     },
     name:{
       type: String
+    },
+    required: {
+      type: Boolean,
+      default: false
     },
     // if schema were defined in top level definitions pass to any nested element in case it uses the def
     definitions: {
@@ -121,6 +128,7 @@ export default {
 <style type="text/css">
   .vueml-json-collapsible-title {
     cursor: pointer;
+    display: flex;
   }
 
   .vueml-json-details {
@@ -131,12 +139,21 @@ export default {
   .vueml-json-conditional {
     display: flex;
   }
+  .vueml-json-element {
+    display: flex;
+  }
+  .vueml-json-other {
+    display: flex;
+  }
 
   .vueml-json-collapsed:after {
     content: '\25B8';
   }
   .vueml-json-open:after {
     content: '\25BE';
+  }
+  .hidden {
+    opacity: 0;
   }
 
   .vueml-json-description,
@@ -157,12 +174,15 @@ export default {
   .vueml-json-type {
     color: green;
   }
+  .vueml-json-required {
+    color: red;
+  }
   .vueml-json-prop-name {
     color: blue;
   }
+  
 
   .vueml-json-schema span {
-    padding-left: 0.25em;
     padding-right: 0.25em;
   }
 
