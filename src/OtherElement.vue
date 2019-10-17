@@ -211,7 +211,7 @@ export default {
       return val
     },
     getHasEnum(element) {
-      return element.enum && element.enum.length > 0
+      return element.enum != null && element.enum.length > 0
     },
     getFormattedValues(rules) {
       var values = []

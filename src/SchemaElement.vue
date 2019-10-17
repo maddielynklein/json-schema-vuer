@@ -91,8 +91,29 @@ export default {
   },
   computed: {
     computedElement() {
-      if (!this.element.type) {
-        //if (this.element.properties) this.element.type
+      if (this.element.$ref) {
+        var regex = /\/([^/]*)/g
+        var keyPath = []
+        var path = this.element.$ref.indexOf('#') > -1 ?this.element.$ref.substring(this.element.$ref.indexOf('#') + 1) : ''
+        var match = regex.exec(path)
+        while (match) {
+          keyPath.push(match[1])
+          match = regex.exec(path)
+        }
+        // use path in $ref string to try to find def
+        var def = keyPath.length > 0 ? this.$schema : (keyPath.length > 0 ? {} : null)
+        for (var i = 0; i < keyPath.length; i++) {
+          def = def[keyPath[i]] || null
+          if (!def) break
+        }
+        // others look in the mappings of id to shcema to try to find it
+        if (!def) {
+          def = this.$schemaIdMap[this.element.$ref]
+        }
+        // otherwise return element with title with unknown def
+        if (!def) def = {type: 'Unknown definition schema'}
+
+        return def
       }
       return this.element
     },

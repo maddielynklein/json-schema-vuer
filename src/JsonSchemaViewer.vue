@@ -1,13 +1,14 @@
 <template>
   <SchemaElement 
+    class="vueml-json-schema"
     :element="schemaObj"
     :isParent="true"
     :initiallyCollapsed="false"
-    :definitions="null"
   />
 </template>
 
 <script>
+import Vue from 'vue'
 import SchemaElement from './SchemaElement'
 export default {
   name: "JsonSchemaViewer",
@@ -33,7 +34,28 @@ export default {
       schemaObj: JSON.parse(this.schema)
     }
   },
-  computed: {
+  watch: {
+    schema() {
+      Vue.prototype.$schema = this.schemaObj
+      this.mapSchemaIds(this.schemaObj)
+    },
+  },
+  methods: {
+    mapSchemaIds(obj) {
+      for (var prop in obj) {
+        if (prop == 'id' || prop == '$id') {
+          Vue.prototype.$schemaIdMap[obj[prop]] = obj
+        }
+        if(obj[prop] instanceof Object || obj[prop] instanceof Array) {
+          this.mapSchemaIds(obj[prop]);
+        } 
+      }
+    }
+  },
+  created() {
+    Vue.prototype.$schema = this.schemaObj
+    Vue.prototype.$schemaIdMap = {}
+    this.mapSchemaIds(this.schemaObj)
 
   }
 }
