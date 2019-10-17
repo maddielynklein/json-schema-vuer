@@ -1,14 +1,14 @@
 <template>
-  <section class="vueml-json-element">
-    <span v-if="name" class="vueml-json-prop-name"><span class="vueml-json-required" v-if="required">*</span>{{ name }}:</span>
+  <section class="jschema-vuer-element">
+    <span v-if="name" class="jschema-vuer-prop-name"><span class="jschema-vuer-required" v-if="required">*</span>{{ name }}:</span>
     <CollapsibleElement v-if="hasNested"
       :initiallyCollapsed="initiallyCollapsed"
       :type="element.type"
     >
       <template v-slot:title>
-        <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+        <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
         <span v-if="constantValue">{{ constantValue }}</span>
-        <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
+        <span v-else-if="element.type" class="jschema-vuer-type">{{ element.type }}</span>
       </template>
 
       <template v-slot:titleOpenEnd v-if="!constantValue">
@@ -24,9 +24,9 @@
       </template>
 
       <template v-slot:content>
-        <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
-        <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
+        <span v-if="element.description" class="jschema-vuer-description">{{element.description}}</span>
+        <span v-if="element.default" class="jschema-vuer-default">default: {{element.default}}</span>
+        <span v-if="element.examples" class="jschema-vuer-examples">examples: {{element.examples.toString()}}</span>
 
         <template v-if="!constantValue">
           <template v-if="getHasEnum(element)">
@@ -39,8 +39,8 @@
           </template>
           <template v-for="combo in combinationKeys">
             <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-            <div v-bind:key="combo" class="vueml-json-details">
-              <span v-for="(option,index) in element[combo]" v-bind:key="index" class="vueml-json-conditional">
+            <div v-bind:key="combo" class="jschema-vuer-details">
+              <span v-for="(option,index) in element[combo]" v-bind:key="index" class="jschema-vuer-conditional">
                 <template v-if="getConstantValue(option) != null">{{ getConstantValue(option) }}</template>
                 <template v-else>
                   <template v-for="value in getFormattedValues(option)">
@@ -64,7 +64,7 @@
           </template>
 
           <template v-for="condition in conditionalKeys">
-            <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">
+            <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
               <span>{{ condition }}:</span>
               <template v-if="getConstantValue(element[condition]) != null">{{ getConstantValue(element[condition]) }}</template>
               <template v-else>
@@ -91,10 +91,18 @@
     </CollapsibleElement>
 
     <span v-else>
-      <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+      <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
       <span v-if="constantValue">{{ constantValue }}</span>
-      <span v-else-if="element.type" class="vueml-json-type">{{ element.type }}</span>
+      <span v-else-if="element.type" class="jschema-vuer-type">{{ element.type }}</span>
       <span v-if="!constantValue">
+        <template v-if="getHasEnum(element)">
+          <CollapsibleElement type="array" :initiallyCollapsed="true">
+            <template v-slot:title><span>Enum:</span></template>
+            <template v-slot:content>
+              <span v-for="eVal in element.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
+            </template>
+          </CollapsibleElement>
+        </template>
         <template v-for="value in getFormattedValues(element)" >
           <span v-bind:key="value">{{ value }}</span>
         </template>
@@ -164,7 +172,7 @@ export default {
       this.baseNestedKeys.forEach((key) => {
         if (this.element[key] != null) nested = true
       })
-      return nested || this.getHasEnum(this.element)
+      return nested
     },
     nestedElementKeys() {
       return this.baseNestedKeys.concat(this.extraNestedElementKeys)
@@ -172,7 +180,7 @@ export default {
     extraNestedElementKeys() {
       if (!this.hasType) {
         return Object.keys(this.element).filter((key) => {
-          return this.baseNestedKeys.indexOf(key) == -1
+          return this.baseNestedKeys.indexOf(key) == -1 && ['enum', 'constant'].indexOf(key) == -1
         })
       }
       var keys = []

@@ -1,12 +1,12 @@
 <template>
-  <section class="vueml-json-element">
-    <span v-if="name" class="vueml-json-prop-name"><span class="vueml-json-required" v-if="required">*</span>{{ name }}:</span>
+  <section class="jschema-vuer-element">
+    <span v-if="name" class="jschema-vuer-prop-name"><span class="jschema-vuer-required" v-if="required">*</span>{{ name }}:</span>
     <CollapsibleElement v-if="hasNested"
       :type="'array'"
       :initiallyCollapsed="initiallyCollapsed"
     >
       <template v-slot:title>
-        <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+        <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
       </template>
 
       <template v-slot:titleOpenEnd>
@@ -15,12 +15,12 @@
       </template>
 
       <template v-slot:content>
-        <span v-if="element.description" class="vueml-json-description">{{element.description}}</span>
-        <span v-if="element.default" class="vueml-json-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="vueml-json-examples">examples: {{element.examples.toString()}}</span>
+        <span v-if="element.description" class="jschema-vuer-description">{{element.description}}</span>
+        <span v-if="element.default" class="jschema-vuer-default">default: {{element.default}}</span>
+        <span v-if="element.examples" class="jschema-vuer-examples">examples: {{element.examples.toString()}}</span>
 
         
-        <section v-if="hasItems" class="vueml-json-element">
+        <section v-if="hasItems" class="jschema-vuer-element">
           <span><strong>items:</strong></span>
           <CollapsibleElement v-if="element.items.length > 1" type="array" :initiallyCollapsed="false">
             <template v-slot:content>
@@ -42,7 +42,7 @@
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="vueml-json-details" v-if="element[combo]">
+          <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
               <ArrayElement :element="option" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
             </span>
@@ -50,7 +50,7 @@
         </template>
 
         <template v-for="condition in conditionalKeys">
-          <div v-bind:key="condition" class="vueml-json-conditional" v-if="element[condition]">  
+          <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
               <span v-if="element[condition]">{{ condition }}:</span> 
               <ArrayElement :element="element[condition]" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
           </div>
@@ -59,7 +59,7 @@
     </CollapsibleElement> 
 
     <span v-else>
-      <span v-if="element.title" class="vueml-json-title"><strong>{{ element.title }}</strong></span>
+      <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
       <span v-if="showNonNestedBrackets">[</span>
       <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
       <span v-if="showNonNestedBrackets">]</span>

@@ -2,18 +2,20 @@
   <section>
     <template v-if="isCombination">
       <template v-for="combo in combinationKeys">
-         <CollapsibleElement v-bind:key="combo"
-           v-if="computedElement[combo] != null && computedElement[combo].length > 0" 
+        <section v-if="computedElement[combo] != null && computedElement[combo].length > 0" class="jschema-vuer-element">
+          <span v-if="name" class="jschema-vuer-prop-name">{{ name }}: </span>
+          <CollapsibleElement v-bind:key="combo"
             :initiallyCollapsed="initiallyCollapsed">
-           <template v-slot:title>
-             <span >{{ combo }}:</span>
-           </template>
+            <template v-slot:title>
+              <span >{{ combo }}:</span>
+            </template>
 
-           <template v-slot:content>
-             <SchemaElement v-for="(schema,index) in computedElement[combo]" v-bind:key="index"
+            <template v-slot:content>
+              <SchemaElement v-for="(schema,index) in computedElement[combo]" v-bind:key="index"
                :element="schema"/>
-           </template>
-        </CollapsibleElement>
+            </template>
+          </CollapsibleElement>
+        </section>
       </template>
     </template>
 
@@ -147,66 +149,66 @@ export default {
 </script>
 
 <style type="text/css">
-  .vueml-json-collapsible-title {
+  .jschema-vuer-collapsible-title {
     cursor: pointer;
     display: flex;
   }
 
-  .vueml-json-details {
+  .jschema-vuer-details {
     display: flex;
     flex-direction: column;
     margin-left: 2em;
   }
-  .vueml-json-conditional {
+  .jschema-vuer-conditional {
     display: flex;
   }
-  .vueml-json-element {
+  .jschema-vuer-element {
     display: flex;
   }
-  .vueml-json-other {
+  .jschema-vuer-other {
     display: flex;
   }
 
-  .vueml-json-collapsed:after {
+  .jschema-vuer-collapsed:after {
     content: '\25B8';
   }
-  .vueml-json-open:after {
+  .jschema-vuer-open:after {
     content: '\25BE';
   }
   .hidden {
     opacity: 0;
   }
 
-  .vueml-json-description,
-  .vueml-json-default,
-  .vueml-json-examples {
+  .jschema-vuer-description,
+  .jschema-vuer-default,
+  .jschema-vuer-examples {
     font-size: 0.85rem;
   }
-  .vueml-json-description {
+  .jschema-vuer-description {
     color: grey;
   }
-  .vueml-json-default {
+  .jschema-vuer-default {
     color: darkgrey;
   }
-  .vueml-json-examples {
+  .jschema-vuer-examples {
     color: cornflowerblue;
   }
 
-  .vueml-json-type {
+  .jschema-vuer-type {
     color: green;
   }
-  .vueml-json-required {
+  .jschema-vuer-required {
     color: red;
   }
-  .vueml-json-prop-name {
+  .jschema-vuer-prop-name {
     color: blue;
   }
   
-  .vueml-json-schema span {
+  .jschema-vuer-schema span {
     padding-right: 0.5em;
   }
 
-  .vueml-json-schema code {
+  .jschema-vuer-schema code {
     background: gainsboro;
     border: 0.1em solid grey;
     padding: 0.1em 0.25em;

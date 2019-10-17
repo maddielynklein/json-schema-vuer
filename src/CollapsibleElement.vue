@@ -1,15 +1,15 @@
 <template>
   <div>
-    <span class="vueml-json-collapsible-title" v-on:click="isCollapsed = !isCollapsed">
-      <span :class="{'vueml-json-collapsed' : isCollapsed, 'vueml-json-open': !isCollapsed}" />
+    <span class="jschema-vuer-collapsible-title" v-on:click="isCollapsed = !isCollapsed">
+      <span :class="{'jschema-vuer-collapsed' : isCollapsed, 'jschema-vuer-open': !isCollapsed}" />
       <slot name="title"></slot>
       {{ topTag }}
       <slot name="titleOpenEnd" v-if="!isCollapsed" />
     </span>
-    <div v-show="!isCollapsed" class="vueml-json-details">
+    <div v-show="!isCollapsed" class="jschema-vuer-details">
       <slot name="content"></slot>
     </div>
-    <span v-if="bottomTag"><span class="vueml-json-collapsed hidden"></span>{{ bottomTag }}</span>
+    <span v-if="bottomTag"><span class="jschema-vuer-collapsed hidden"></span>{{ bottomTag }}</span>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <SchemaElement 
-    class="vueml-json-schema"
+    class="jschema-vuer-schema"
     :element="schemaObj"
     :isParent="true"
     :initiallyCollapsed="false"
