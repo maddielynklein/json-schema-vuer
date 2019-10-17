@@ -1,14 +1,14 @@
 {
-  "name": "vueml-json-schema",
+  "name": "json-schema-vuer",
   "version": "1.0.0",
-  "description": "Vue component to visualize json schema in UML",
+  "description": "Vue component to visualize json schema in interactive json view",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maddielynklein/vueml-json-schema.git"
+    "url": "git+https://github.com/maddielynklein/json-schema-vuer.git"
   },
   "keywords": [
     "vue",
@@ -16,15 +16,14 @@
     "schema",
     "typescript",
     "jsonschema",
-    "UML",
     "visualize"
   ],
   "author": "Maddie Klein",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/maddielynklein/vueml-json-schema/issues"
+    "url": "https://github.com/maddielynklein/json-schema-vuer/issues"
   },
-  "homepage": "https://github.com/maddielynklein/vueml-json-schema#readme",
+  "homepage": "https://github.com/maddielynklein/json-schema-vuer#readme",
   "dependencies": {
     "vue": "^2.6.10"
   }
