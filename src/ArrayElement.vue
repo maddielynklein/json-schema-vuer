@@ -33,18 +33,18 @@
         </section>
 
         <template v-if="additionalItemsSchema">
-          <SchemaElement :element="additionalItemsSchema" :initiallyCollapsed="true"/>
+          <SchemaElement :element="additionalItemsSchema"/>
         </template>
 
         <template v-if="containsSchema">
-          <SchemaElement :element="containsSchema" :initiallyCollapsed="true"/>
+          <SchemaElement :element="containsSchema"/>
         </template>
         
         <template v-for="combo in combinationKeys">
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <ArrayElement :element="option" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
+              <ArrayElement :element="option" :showNonNestedBrackets="false"/>
             </span>
           </div>
         </template>
@@ -52,7 +52,7 @@
         <template v-for="condition in conditionalKeys">
           <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
               <span v-if="element[condition]">{{ condition }}:</span> 
-              <ArrayElement :element="element[condition]" :initiallyCollapsed="true" :showNonNestedBrackets="false"/>
+              <ArrayElement :element="element[condition]" :showNonNestedBrackets="false"/>
           </div>
         </template>
       </template>

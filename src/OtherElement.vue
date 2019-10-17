@@ -30,7 +30,7 @@
 
         <template v-if="!constantValue">
           <template v-if="getHasEnum(element)">
-            <CollapsibleElement type="array" :initiallyCollapsed="true">
+            <CollapsibleElement type="array">
               <template v-slot:title><span>Enum:</span></template>
               <template v-slot:content>
                 <span v-for="eVal in element.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
@@ -47,7 +47,7 @@
                     <span v-bind:key="value">{{ value }}</span>
                   </template>
                   <template v-if="getHasEnum(option)">
-                    <CollapsibleElement type="array" :initiallyCollapsed="true">
+                    <CollapsibleElement type="array">
                       <template v-slot:title><span>Enum:</span></template>
                       <template v-slot:content>
                         <span v-for="eVal in option.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
@@ -72,7 +72,7 @@
                   <span v-bind:key="value">{{ value }}</span>
                 </template>
                 <template v-if="getHasEnum(element[condition])">
-                  <CollapsibleElement type="array" :initiallyCollapsed="true">
+                  <CollapsibleElement type="array">
                     <template v-slot:title><span>Enum:</span></template>
                     <template v-slot:content>
                       <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
@@ -96,7 +96,7 @@
       <span v-else-if="element.type" class="jschema-vuer-type">{{ element.type }}</span>
       <span v-if="!constantValue">
         <template v-if="getHasEnum(element)">
-          <CollapsibleElement type="array" :initiallyCollapsed="true">
+          <CollapsibleElement type="array">
             <template v-slot:title><span>Enum:</span></template>
             <template v-slot:content>
               <span v-for="eVal in element.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>

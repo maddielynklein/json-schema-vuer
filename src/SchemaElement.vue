@@ -12,7 +12,8 @@
 
             <template v-slot:content>
               <SchemaElement v-for="(schema,index) in computedElement[combo]" v-bind:key="index"
-               :element="schema"/>
+               :element="schema"
+               :initiallyCollapsed="false"/>
             </template>
           </CollapsibleElement>
         </section>
