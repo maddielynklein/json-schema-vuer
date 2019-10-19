@@ -43,7 +43,9 @@
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <ObjectElement :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+              <SchemaElement v-if="option.$ref != null" 
+                type="object" :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+              <ObjectElement v-else :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
             </span>
           </div>
         </template>
@@ -51,6 +53,8 @@
         <template v-for="condition in conditionalKeys">
           <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
             <span v-if="element[condition]">{{ condition }}:</span>
+            <SchemaElement v-if="element[condition].$ref != null" 
+              type="object" :element="element[condition]" :showNonNestedBrackets="false"/>
             <ObjectElement :element="element[condition]" :showNonNestedBrackets="false"/>
           </div>
         </template>
@@ -130,7 +134,7 @@
         return title
       },
       hasNested() {
-        return this.hasProperties || this.hasNestedDetails|| this.propertyNamesSchema || this.additionalPropertiesSchema
+        return this.hasProperties || this.hasNestedDetails || this.propertyNamesSchema || this.additionalPropertiesSchema
       },
       hasProperties() {
         return this.propertyKeys.length > 0

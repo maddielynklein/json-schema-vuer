@@ -15,6 +15,10 @@ export default {
     name:{
       type: String
     },
+    type: {
+      type: String,
+      default: null
+    },
     required: {
       type: Boolean,
       default: false
@@ -24,6 +28,10 @@ export default {
       type: Object,
     },
     initiallyCollapsed: {
+      type: Boolean,
+      default: true
+    },
+    showNonNestedBrackets: {
       type: Boolean,
       default: true
     },
@@ -44,7 +52,8 @@ export default {
       props: {
         element: this.computedElement,
         name: this.name,
-        initiallyCollapsed: this.initiallyCollapsed
+        initiallyCollapsed: this.initiallyCollapsed,
+        showNonNestedBrackets: this.showNonNestedBrackets
       }
     }
     var comp = null;
@@ -114,20 +123,20 @@ export default {
       })
       return hasCombo && !this.computedElement.type
     },
-    hasType() {
-      return this.computedElement.type != null
-    },
     isSingleType() {
-      return typeof this.computedElement.type == 'string'
+      return typeof this.computedElement.type == 'string' || 
+        (this.computedElement.type == null && this.type != null)
     },
     isMultipleType() {
       return typeof Array.isArray(this.computedElement.type)
     },
     isArrayType() {
-      return this.computedElement.type == 'array' || this.computedElement.items != null
+      return this.computedElement.type == 'array' || this.computedElement.items != null || 
+        (this.computedElement.type == null && this.type == 'array')
     },
     isObjectType() {
-      return this.computedElement.type == 'object' || this.computedElement.properties != null
+      return this.computedElement.type == 'object' || this.computedElement.properties != null ||
+        (this.computedElement.type == null && this.type == 'object')
     },
     isOtherType() {
       return this.isSingleType && !this.isArrayType && !this.isObjectType

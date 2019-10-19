@@ -48,7 +48,9 @@
           <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
           <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
             <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <ArrayElement :element="option" :showNonNestedBrackets="false"/>
+              <SchemaElement v-if="option.$ref != null" 
+                type="array" :element="option" :showNonNestedBrackets="false"/>
+              <ArrayElement v-else :element="option" :showNonNestedBrackets="false"/>
             </span>
           </div>
         </template>
@@ -56,7 +58,9 @@
         <template v-for="condition in conditionalKeys">
           <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
               <span v-if="element[condition]">{{ condition }}:</span> 
-              <ArrayElement :element="element[condition]" :showNonNestedBrackets="false"/>
+              <SchemaElement v-if="element[condition].$ref != null" 
+                type="array" :element="element[condition]" :showNonNestedBrackets="false"/>
+              <ArrayElement v-else :element="element[condition]" :showNonNestedBrackets="false"/>
           </div>
         </template>
       </template>
