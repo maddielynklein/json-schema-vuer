@@ -79,7 +79,7 @@
                   <CollapsibleElement type="array">
                     <template v-slot:title><span>Enum:</span></template>
                     <template v-slot:content>
-                      <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ iformatEnumValue(eVal) }}</span>
+                      <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
                     </template>
                   </CollapsibleElement>
                 </template>
