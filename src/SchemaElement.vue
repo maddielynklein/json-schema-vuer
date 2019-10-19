@@ -1,53 +1,6 @@
-<template>
-  <section>
-    <template v-if="isCombination">
-      <template v-for="combo in combinationKeys">
-        <section v-bind:key="combo" v-if="computedElement[combo] != null && computedElement[combo].length > 0" class="jschema-vuer-element">
-          <span v-if="name" class="jschema-vuer-prop-name">
-            <span>&nbsp;</span>
-            {{ name }}:
-          </span>
-          <CollapsibleElement
-            :initiallyCollapsed="initiallyCollapsed">
-            <template v-slot:title>
-              <span >{{ combo }}:</span>
-            </template>
-
-            <template v-slot:content>
-              <SchemaElement v-for="(schema,index) in computedElement[combo]" v-bind:key="index"
-               :element="schema"
-               :initiallyCollapsed="false"/>
-            </template>
-          </CollapsibleElement>
-        </section>
-      </template>
-    </template>
-
-    <ArrayElement v-else-if="isArrayType"
-      :element="computedElement"
-      :initiallyCollapsed="initiallyCollapsed"
-      :name="name"
-      :required="required"
-    />
-
-    <ObjectElement v-else-if="isObjectType"
-      :element="computedElement"
-      :initiallyCollapsed="initiallyCollapsed"
-      :name="name"
-      :required="required"
-    />
-
-    <OtherElement v-else-if="isOtherType || !hasType || isMultipleType"
-      :element="computedElement"
-      :initiallyCollapsed="initiallyCollapsed"
-      :name="name"
-      :required="required"
-    />
-  </section>
-</template>
-
 <script>
 import CollapsibleElement from './CollapsibleElement'
+import CombinationElement from './CombinationElement'
 import ObjectElement from './ObjectElement'
 import ArrayElement from './ArrayElement'
 import OtherElement from './OtherElement'
@@ -81,9 +34,26 @@ export default {
   },
   components: {
     CollapsibleElement,
+    CombinationElement,
     ObjectElement,
     ArrayElement,
     OtherElement
+  },
+  render(createElement) {
+    var config = {
+      props: {
+        element: this.computedElement,
+        name: this.name,
+        initiallyCollapsed: this.initiallyCollapsed
+      }
+    }
+    var comp = null;
+    if (this.isCombination) comp = CombinationElement
+    else if (this.isObjectType) comp = ObjectElement
+    else if (this.isArrayType) comp = ArrayElement
+    else comp = OtherElement
+
+    return createElement(comp, config)
   },
   data() {
     return {
