@@ -1,6 +1,10 @@
 <template>
   <section class="jschema-vuer-element">
-    <span v-if="name" class="jschema-vuer-prop-name"><span class="jschema-vuer-required" v-if="required">*</span>{{ name }}:</span>
+    <span v-if="name" class="jschema-vuer-prop-name">
+      <span class="jschema-vuer-required" v-if="required">*</span>
+      <span v-else>&nbsp;</span>
+      {{ name }}:
+    </span>
     <CollapsibleElement v-if="hasNested"
       :type="'object'"
       :initiallyCollapsed="initiallyCollapsed"

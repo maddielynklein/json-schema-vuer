@@ -2,9 +2,12 @@
   <section>
     <template v-if="isCombination">
       <template v-for="combo in combinationKeys">
-        <section v-if="computedElement[combo] != null && computedElement[combo].length > 0" class="jschema-vuer-element">
-          <span v-if="name" class="jschema-vuer-prop-name">{{ name }}: </span>
-          <CollapsibleElement v-bind:key="combo"
+        <section v-bind:key="combo" v-if="computedElement[combo] != null && computedElement[combo].length > 0" class="jschema-vuer-element">
+          <span v-if="name" class="jschema-vuer-prop-name">
+            <span>&nbsp;</span>
+            {{ name }}:
+          </span>
+          <CollapsibleElement
             :initiallyCollapsed="initiallyCollapsed">
             <template v-slot:title>
               <span >{{ combo }}:</span>
@@ -95,6 +98,20 @@ export default {
   computed: {
     computedElement() {
       if (this.element.$ref) {
+        // Check for recursively nested schemas and stop rendering to prevent infinite
+        // JsonSchemaViewer will always be root of schema display
+        var isRecursive = false
+        var node = this
+        while (node.$parent.$options.name != 'JsonSchemaViewer' && !isRecursive) {
+          node = node.$parent
+          if ((node.element || {}).$ref == this.element.$ref) {
+            isRecursive = true
+          }
+        }
+        if (isRecursive) {
+          return { type: 'Recursive nested schema detected for schema definition: ' + this.element.$ref }
+        }
+
         var regex = /\/([^/]*)/g
         var keyPath = []
         var path = this.element.$ref.indexOf('#') > -1 ?this.element.$ref.substring(this.element.$ref.indexOf('#') + 1) : ''
@@ -203,6 +220,7 @@ export default {
   }
   .jschema-vuer-prop-name {
     color: blue;
+    display: flex;
   }
   
   .jschema-vuer-schema span {

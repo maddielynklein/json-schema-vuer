@@ -1,6 +1,10 @@
 <template>
   <section class="jschema-vuer-element">
-    <span v-if="name" class="jschema-vuer-prop-name"><span class="jschema-vuer-required" v-if="required">*</span>{{ name }}:</span>
+    <span v-if="name" class="jschema-vuer-prop-name">
+      <span class="jschema-vuer-required" v-if="required">*</span>
+      <span v-else>&nbsp;</span>
+      {{ name }}:
+    </span>
     <CollapsibleElement v-if="hasNested"
       :initiallyCollapsed="initiallyCollapsed"
       :type="element.type"
@@ -33,7 +37,7 @@
             <CollapsibleElement type="array">
               <template v-slot:title><span>Enum:</span></template>
               <template v-slot:content>
-                <span v-for="eVal in element.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
+                <span v-for="eVal in element.enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
               </template>
             </CollapsibleElement>
           </template>
@@ -75,7 +79,7 @@
                   <CollapsibleElement type="array">
                     <template v-slot:title><span>Enum:</span></template>
                     <template v-slot:content>
-                      <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
+                      <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ iformatEnumValue(eVal) }}</span>
                     </template>
                   </CollapsibleElement>
                 </template>
@@ -99,7 +103,7 @@
           <CollapsibleElement type="array">
             <template v-slot:title><span>Enum:</span></template>
             <template v-slot:content>
-              <span v-for="eVal in element.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
+              <span v-for="eVal in element.enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
             </template>
           </CollapsibleElement>
         </template>
@@ -210,12 +214,17 @@ export default {
     }
   },
   methods: {
+    formatEnumValue(val) {
+      if (this.isString || 
+        (!this.hasType && isNaN(val) && val != 'null' && val != 'false' && val != 'true')) val = '"' + val + '"'
+      return val
+    },
     getConstantValue(element) {
       // call to string for boolean defaults
       var val = null
       if (element.const != null) val = element.const.toString()
       if (element.enum && element.enum.length == 1) val = element.enum[0].toString()
-      if (val && this.isString) val = '"' + val + '"'
+      if (val) val = this.formatEnumValue(val)
       return val
     },
     getHasEnum(element) {
