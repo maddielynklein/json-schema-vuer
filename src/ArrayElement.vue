@@ -15,62 +15,72 @@
 
       <template v-slot:titleOpenEnd>
         <span/>
-        <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        <ValueElement v-if="constantValue" :values="constantValue" />
+        <template v-else>
+          <ValueElement v-if="hasEnums" :values="element.enum" title="Enum"/>
+          <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        </template>
       </template>
 
       <template v-slot:content>
         <span v-if="element.description" class="jschema-vuer-description">{{element.description}}</span>
         <span v-if="element.default" class="jschema-vuer-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="jschema-vuer-examples">examples: {{element.examples.toString()}}</span>
+        <ValueElement v-if="element.examples" class="jschema-vuer-examples" :values="element.examples" title="examples"/>
 
         
-        <section v-if="hasItems" class="jschema-vuer-element">
-          <span><strong>items:</strong></span>
-          <CollapsibleElement v-if="element.items.length > 1" type="array" :initiallyCollapsed="false">
-            <template v-slot:content>
-              <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
-                :element="item"
-              />
-            </template>
-          </CollapsibleElement>
-          <SchemaElement v-else :element="element.items[0]" />
-        </section>
+        <template v-if="!constantValue">
+          <section v-if="hasItems" class="jschema-vuer-element">
+            <span><strong>items:</strong></span>
+            <CollapsibleElement v-if="element.items.length > 1" type="array" :initiallyCollapsed="false">
+              <template v-slot:content>
+                <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
+                  :element="item"
+                />
+              </template>
+            </CollapsibleElement>
+            <SchemaElement v-else :element="element.items[0]" />
+          </section>
 
-        <template v-if="additionalItemsSchema">
-          <SchemaElement :element="additionalItemsSchema"/>
-        </template>
+          <template v-if="additionalItemsSchema">
+            <SchemaElement :element="additionalItemsSchema"/>
+          </template>
 
-        <template v-if="containsSchema">
-          <SchemaElement :element="containsSchema"/>
-        </template>
-        
-        <template v-for="combo in combinationKeys">
-          <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
-            <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <SchemaElement v-if="option.$ref != null" 
-                type="array" :element="option" :showNonNestedBrackets="false"/>
-              <ArrayElement v-else :element="option" :showNonNestedBrackets="false"/>
-            </span>
-          </div>
-        </template>
+          <template v-if="containsSchema">
+            <SchemaElement :element="containsSchema"/>
+          </template>
+          
+          <template v-for="combo in combinationKeys">
+            <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
+            <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
+              <span v-for="(option,index) in element[combo]" v-bind:key="index">
+                <SchemaElement v-if="option.$ref != null" 
+                  type="array" :element="option" :showNonNestedBrackets="false"/>
+                <ArrayElement v-else :element="option" :showNonNestedBrackets="false"/>
+              </span>
+            </div>
+          </template>
 
-        <template v-for="condition in conditionalKeys">
-          <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
-              <span v-if="element[condition]">{{ condition }}:</span> 
-              <SchemaElement v-if="element[condition].$ref != null" 
-                type="array" :element="element[condition]" :showNonNestedBrackets="false"/>
-              <ArrayElement v-else :element="element[condition]" :showNonNestedBrackets="false"/>
-          </div>
+          <template v-for="condition in conditionalKeys">
+            <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
+                <span v-if="element[condition]">{{ condition }}:</span> 
+                <SchemaElement v-if="element[condition].$ref != null" 
+                  type="array" :element="element[condition]" :showNonNestedBrackets="false"/>
+                <ArrayElement v-else :element="element[condition]" :showNonNestedBrackets="false"/>
+            </div>
+          </template>
         </template>
       </template>
     </CollapsibleElement> 
 
     <span v-else>
       <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
-      <span v-if="showNonNestedBrackets">[</span>
-      <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
-      <span v-if="showNonNestedBrackets">]</span>
+      <ValueElement v-if="constantValue" :values="constantValue"/>
+      <template v-else>
+        <span v-if="showNonNestedBrackets">{</span>
+        <ValueElement v-if="hasEnums" :values="element.enum" title="Enum"/>
+        <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        <span v-if="showNonNestedBrackets">}</span>
+      </template>
     </span>  
   </section>
 </template>
@@ -129,6 +139,14 @@
       }
     },
     computed: {
+      constantValue() {
+        if (this.element.const != null) return [this.element.const]
+        if (this.element.enum != null && this.element.enum.length == 1) return this.element.enum
+        return null
+      },
+      hasEnums() {
+        return this.element.enum != null && this.element.enum.length > 1
+      },
       title() {
         var title = this.name ? (this.name + ": ") : ''
         title += (this.element.title || '')

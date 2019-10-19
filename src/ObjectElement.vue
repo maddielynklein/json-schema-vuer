@@ -15,63 +15,74 @@
 
       <template v-slot:titleOpenEnd>
         <span/>
-        <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        <ValueElement v-if="constantValue" :values="constantValue" />
+        <template v-else>
+          <ValueElement v-if="hasEnums" :values="element.enum" title="Enum"/>
+          <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        </template>
       </template>
 
       <template v-slot:content>
         <span v-if="element.description" class="jschema-vuer-description">{{element.description}}</span>
         <span v-if="element.default" class="jschema-vuer-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="jschema-vuer-examples">examples: {{element.examples.toString()}}</span>
+        <ValueElement v-if="element.examples" class="jschema-vuer-examples" :values="element.examples" title="examples"/>
 
-        <template v-if="hasProperties">
-          <SchemaElement v-for="key in propertyKeys" v-bind:key="key"
-            :element="element.properties[key]"
-            :name="key"
-            :required="requiredProperties.indexOf(key) > -1"
-          />
-        </template>
+        <template v-if="!constantValue">
+          <template v-if="hasProperties">
+            <SchemaElement v-for="key in propertyKeys" v-bind:key="key"
+              :element="element.properties[key]"
+              :name="key"
+              :required="requiredProperties.indexOf(key) > -1"
+            />
+          </template>
 
-        <template v-if="propertyNamesSchema">
-          <SchemaElement :element="propertyNamesSchema"/>
-        </template>
+          <template v-if="propertyNamesSchema">
+            <SchemaElement :element="propertyNamesSchema"/>
+          </template>
 
-        <template v-if="additionalPropertiesSchema">
-          <SchemaElement :element="additionalPropertiesSchema"/>
-        </template>
-        
-        <template v-for="combo in combinationKeys">
-          <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
-          <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
-            <span v-for="(option,index) in element[combo]" v-bind:key="index">
-              <SchemaElement v-if="option.$ref != null" 
-                type="object" :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
-              <ObjectElement v-else :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
-            </span>
-          </div>
-        </template>
+          <template v-if="additionalPropertiesSchema">
+            <SchemaElement :element="additionalPropertiesSchema"/>
+          </template>
+          
+          <template v-for="combo in combinationKeys">
+            <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
+            <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
+              <span v-for="(option,index) in element[combo]" v-bind:key="index">
+                <SchemaElement v-if="option.$ref != null" 
+                  type="object" :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+                <ObjectElement v-else :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+              </span>
+            </div>
+          </template>
 
-        <template v-for="condition in conditionalKeys">
-          <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
-            <span v-if="element[condition]">{{ condition }}:</span>
-            <SchemaElement v-if="element[condition].$ref != null" 
-              type="object" :element="element[condition]" :showNonNestedBrackets="false"/>
-            <ObjectElement :element="element[condition]" :showNonNestedBrackets="false"/>
-          </div>
+          <template v-for="condition in conditionalKeys">
+            <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
+              <span v-if="element[condition]">{{ condition }}:</span>
+              <SchemaElement v-if="element[condition].$ref != null" 
+                type="object" :element="element[condition]" :showNonNestedBrackets="false"/>
+              <ObjectElement :element="element[condition]" :showNonNestedBrackets="false"/>
+            </div>
+          </template>
         </template>
       </template>
     </CollapsibleElement> 
 
     <span v-else>
       <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
-      <span v-if="showNonNestedBrackets">{</span>
-      <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
-      <span v-if="showNonNestedBrackets">}</span>
+      <ValueElement v-if="constantValue" :values="constantValue"/>
+      <template v-else>
+        <span v-if="showNonNestedBrackets">{</span>
+        <ValueElement v-if="hasEnums" :values="element.enum" title="Enum"/>
+        <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
+        <span v-if="showNonNestedBrackets">}</span>
+      </template>
     </span>   
   </section>
 </template>
 
 <script>
   import CollapsibleElement from './CollapsibleElement'
+  import ValueElement from './ValueElement'
   const SchemaElement = () => import("./SchemaElement");
 
   export default {
@@ -99,6 +110,7 @@
     },
     components: {
       CollapsibleElement,
+      ValueElement,
       SchemaElement
     },
     data() {
@@ -124,6 +136,14 @@
       }
     },
     computed: {
+      constantValue() {
+        if (this.element.const != null) return [this.element.const]
+        if (this.element.enum != null && this.element.enum.length == 1) return this.element.enum
+        return null
+      },
+      hasEnums() {
+        return this.element.enum != null && this.element.enum.length > 1
+      },
       requiredProperties() {
         return this.element.required ? this.element.required : []
       },

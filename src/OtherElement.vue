@@ -11,7 +11,7 @@
     >
       <template v-slot:title>
         <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
-        <span v-if="constantValue">{{ constantValue }}</span>
+        <ValueElement v-if="constantValue" :values="constantValue"/>
         <span v-else-if="element.type" class="jschema-vuer-type">{{ element.type }}</span>
       </template>
 
@@ -30,33 +30,23 @@
       <template v-slot:content>
         <span v-if="element.description" class="jschema-vuer-description">{{element.description}}</span>
         <span v-if="element.default" class="jschema-vuer-default">default: {{element.default}}</span>
-        <span v-if="element.examples" class="jschema-vuer-examples">examples: {{element.examples.toString()}}</span>
+        <ValueElement v-if="element.examples" class="jschema-vuer-examples" :values="element.examples" title="examples"/>
 
         <template v-if="!constantValue">
           <template v-if="getHasEnum(element)">
-            <CollapsibleElement type="array">
-              <template v-slot:title><span>Enum:</span></template>
-              <template v-slot:content>
-                <span v-for="eVal in element.enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
-              </template>
-            </CollapsibleElement>
+            <ValueElement :values="element.enum" title="Enum"/>
           </template>
           <template v-for="combo in combinationKeys">
             <span v-bind:key="combo+'-label'" v-if="element[combo] && element[combo].length > 0">{{ combo }}:</span>
             <div v-bind:key="combo" class="jschema-vuer-details">
               <span v-for="(option,index) in element[combo]" v-bind:key="index" class="jschema-vuer-conditional">
-                <template v-if="getConstantValue(option) != null">{{ getConstantValue(option) }}</template>
+                <ValueElement v-if="getConstantValue(option) != null" :values="getConstantValue(option)"/>
                 <template v-else>
                   <template v-for="value in getFormattedValues(option)">
                     <span v-bind:key="value">{{ value }}</span>
                   </template>
                   <template v-if="getHasEnum(option)">
-                    <CollapsibleElement type="array">
-                      <template v-slot:title><span>Enum:</span></template>
-                      <template v-slot:content>
-                        <span v-for="eVal in option.enum" v-bind:key="eVal">{{ isString ? ('"' + eVal + '"') : eVal.toString() }}</span>
-                      </template>
-                    </CollapsibleElement>
+                    <ValueElement :values="option.enum" title="Enum"/>
                   </template>
                   <template v-for="key in extraNestedElementKeys" >
                     <span v-bind:key="key" v-if="key == 'pattern' && option[key] != null"><code>{{option[key]}}</code></span>
@@ -70,18 +60,13 @@
           <template v-for="condition in conditionalKeys">
             <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
               <span>{{ condition }}:</span>
-              <template v-if="getConstantValue(element[condition]) != null">{{ getConstantValue(element[condition]) }}</template>
+              <ValueElement v-if="getConstantValue(element[condition]) != null" :values="getConstantValue(element[condition])"/>
               <template v-else>
                 <template v-for="value in getFormattedValues(element[condition])">
                   <span v-bind:key="value">{{ value }}</span>
                 </template>
                 <template v-if="getHasEnum(element[condition])">
-                  <CollapsibleElement type="array">
-                    <template v-slot:title><span>Enum:</span></template>
-                    <template v-slot:content>
-                      <span v-for="eVal in element[condition].enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
-                    </template>
-                  </CollapsibleElement>
+                  <ValueElement :values="element[condition].enum" title="Enum"/>
                 </template>
                 <template v-for="key in extraNestedElementKeys" >
                   <span v-bind:key="key" v-if="key == 'pattern' && element[condition][key] != null"><code>{{element[condition][key]}}</code></span>
@@ -94,18 +79,13 @@
       </template>
     </CollapsibleElement>
 
-    <span v-else>
+    <template v-else>
       <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
-      <span v-if="constantValue">{{ constantValue }}</span>
+      <ValueElement v-if="constantValue" :values="constantValue"/>
       <span v-else-if="element.type" class="jschema-vuer-type">{{ element.type }}</span>
-      <span v-if="!constantValue">
+      <div v-if="!constantValue">
         <template v-if="getHasEnum(element)">
-          <CollapsibleElement type="array">
-            <template v-slot:title><span>Enum:</span></template>
-            <template v-slot:content>
-              <span v-for="eVal in element.enum" v-bind:key="eVal">{{ formatEnumValue(eVal) }}</span>
-            </template>
-          </CollapsibleElement>
+          <ValueElement :values="element.enum" title="Enum"/>
         </template>
         <template v-for="value in getFormattedValues(element)" >
           <span v-bind:key="value">{{ value }}</span>
@@ -114,13 +94,14 @@
           <span v-bind:key="key" v-if="key == 'pattern' && element[key] != null"><code>{{element[key]}}</code></span>
           <span v-bind:key="key" v-else-if="element[key] != null">{{key}}: {{element[key]}}</span>
         </template>
-      </span>
-    </span>
+      </div>
+    </template>
   </section>
 </template>
 
 <script>
 import CollapsibleElement from './CollapsibleElement'
+import ValueElement from './ValueElement'
 
 export default {
   name: 'OtherElement',
@@ -142,7 +123,8 @@ export default {
     }
   },
   components: {
-    CollapsibleElement
+    CollapsibleElement,
+    ValueElement
   },
   data() {
     return {
@@ -220,12 +202,10 @@ export default {
       return val
     },
     getConstantValue(element) {
-      // call to string for boolean defaults
-      var val = null
-      if (element.const != null) val = element.const.toString()
-      if (element.enum && element.enum.length == 1) val = element.enum[0].toString()
-      if (val) val = this.formatEnumValue(val)
-      return val
+      var arr = null
+      if (element.const != null) arr = [element.const]
+      else if (element.enum != null && element.enum.length == 1) arr = element.enum
+      return arr
     },
     getHasEnum(element) {
       return element.enum != null && element.enum.length > 0
