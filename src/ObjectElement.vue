@@ -55,8 +55,8 @@
             <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
               <span v-for="(option,index) in element[combo]" v-bind:key="index">
                 <SchemaElement v-if="option.$ref != null" 
-                  type="object" :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
-                <ObjectElement v-else :element="option" :initiallyCollapsed="false" :showNonNestedBrackets="false"/>
+                  type="object" :element="option" :showNonNestedBrackets="false"/>
+                <ObjectElement v-else :element="option" :showNonNestedBrackets="false"/>
               </span>
             </div>
           </template>
