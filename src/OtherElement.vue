@@ -152,7 +152,7 @@ export default {
   },
   computed: {
     hasInformation() {
-      return this.type != null || this.hasNested || this.constantValue || this.getHasEnum(this.element)
+      return this.element.type != null || this.hasNested || this.constantValue || this.getHasEnum(this.element)
         || this.getFormattedValues(this.element).length > 0
     },
     constantValue() {
