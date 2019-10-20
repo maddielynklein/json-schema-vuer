@@ -3,7 +3,8 @@
     <span v-if="name" class="jschema-vuer-prop-name">
       <span class="jschema-vuer-required" v-if="required">*</span>
       <span v-else>&nbsp;</span>
-      {{ name }}:
+      <code v-if="nameType == 'pattern'">{{ name }}</code>
+      {{ nameType != 'pattern' ? name : '' }}:
     </span>
     <CollapsibleElement v-if="hasNested"
       :initiallyCollapsed="initiallyCollapsed"
@@ -115,6 +116,9 @@ export default {
       default: true
     },
     name: {
+      type: String
+    },
+    nameType: {
       type: String
     },
     required: {

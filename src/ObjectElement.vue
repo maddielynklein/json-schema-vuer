@@ -3,7 +3,8 @@
     <span v-if="name" class="jschema-vuer-prop-name">
       <span class="jschema-vuer-required" v-if="required">*</span>
       <span v-else>&nbsp;</span>
-      {{ name }}:
+      <code v-if="nameType == 'pattern'">{{ name }}</code>
+      {{ nameType != 'pattern' ? name : '' }}:
     </span>
     <CollapsibleElement v-if="hasNested"
       :type="'object'"
@@ -33,6 +34,11 @@
               :element="element.properties[key]"
               :name="key"
               :required="requiredProperties.indexOf(key) > -1"
+            />
+            <SchemaElement v-for="key in patternPropertyKeys" v-bind:key="key"
+              :element="element.patternProperties[key]"
+              :name="key"
+              nameType="pattern"
             />
           </template>
 
@@ -93,6 +99,9 @@
         required: true,
       },
       name: {
+        type: String
+      },
+      nameType: {
         type: String
       },
       required: {
@@ -157,10 +166,14 @@
         return this.hasProperties || this.hasNestedDetails || this.propertyNamesSchema || this.additionalPropertiesSchema
       },
       hasProperties() {
-        return this.propertyKeys.length > 0
+        return this.propertyKeys.length > 0 || this.patternPropertyKeys.length > 0
       },
       propertyKeys() {
         if (this.element.properties != null && typeof this.element.properties == 'object') return Object.keys(this.element.properties)
+        else return []
+      },
+      patternPropertyKeys() {
+        if (this.element.patternProperties != null && typeof this.element.patternProperties == 'object') return Object.keys(this.element.patternProperties)
         else return []
       },
       hasNestedDetails() {

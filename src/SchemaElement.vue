@@ -15,6 +15,10 @@ export default {
     name:{
       type: String
     },
+    nameType:{
+      type: String,
+      defualt: 'property'
+    },
     type: {
       type: String,
       default: null
@@ -52,6 +56,7 @@ export default {
       props: {
         element: this.computedElement,
         name: this.name,
+        nameType: this.nameType,
         initiallyCollapsed: this.initiallyCollapsed,
         showNonNestedBrackets: this.showNonNestedBrackets
       }

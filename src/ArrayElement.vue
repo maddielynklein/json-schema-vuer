@@ -3,7 +3,8 @@
     <span v-if="name" class="jschema-vuer-prop-name">
       <span class="jschema-vuer-required" v-if="required">*</span>
       <span v-else>&nbsp;</span>
-      {{ name }}:
+      <code v-if="nameType == 'pattern'">{{ name }}</code>
+      {{ nameType != 'pattern' ? name : '' }}:
     </span>
     <CollapsibleElement v-if="hasNested"
       :type="'array'"
@@ -76,10 +77,10 @@
       <span v-if="element.title" class="jschema-vuer-title"><strong>{{ element.title }}</strong></span>
       <ValueElement v-if="constantValue" :values="constantValue"/>
       <template v-else>
-        <span v-if="showNonNestedBrackets">{</span>
+        <span v-if="showNonNestedBrackets">[</span>
         <ValueElement v-if="hasEnums" :values="element.enum" title="Enum"/>
         <span v-for="value in formattedValues" v-bind:key="value">{{ value }}</span>
-        <span v-if="showNonNestedBrackets">}</span>
+        <span v-if="showNonNestedBrackets">]</span>
       </template>
     </span>  
   </section>
@@ -97,6 +98,9 @@
         required: true,
       },
       name: {
+        type: String
+      },
+      nameType: {
         type: String
       },
       required: {
