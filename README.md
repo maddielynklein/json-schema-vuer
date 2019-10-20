@@ -13,6 +13,6 @@ vue
 
 ## Example
 ```html
-<JsonSchemaViewer schema='{"type":"object","properties":{"demo":{"type":"string"},"version":{"type":"integer","exclusiveMin":0,"max":100},"keywords":{"type":"array","items":{"type":"string"},"uniqueItems":true},"framework":{"const":"Vue"}},"additionalProperties":false,"required":["demo","version"]}'/>
+<JsonSchemaViewer schema='{"type":"object","properties":{"demo":{"type":"string"},"version":{"type":"string","pattern":"[1-9]+\\.[1-9]+\\.[1-9]+"},"keywords":{"type":"array","items":{"type":"string"},"uniqueItems":true},"framework":{"const":"Vue"}},"if":{"properties":{"keywords":{"items":{"const":"Json Schema"},"additionalItems":true}}},"then":{"required":["jsonSchemaVersion"],"properties":{"jsonSchemaVersion":{"type":"integer","exclusiveMinimum":0,"maximum":7}}},"additionalProperties":false,"required":["demo","version"]}'/>
 ```
 

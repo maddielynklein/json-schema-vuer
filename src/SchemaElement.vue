@@ -160,7 +160,7 @@ export default {
   .jschema-vuer-details {
     display: flex;
     flex-direction: column;
-    margin-left: 2em;
+    margin-left: 1.75em;
   }
   .jschema-vuer-conditional {
     display: flex;
