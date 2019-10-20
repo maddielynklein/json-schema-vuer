@@ -39,7 +39,8 @@
                 />
               </template>
             </CollapsibleElement>
-            <SchemaElement v-else :element="element.items[0]" />
+            <SchemaElement v-else-if="Array.isArray(element.items)" :element="element.items[0]" />
+            <SchemaElement v-else :element="element.items" />
           </section>
 
           <template v-if="additionalItemsSchema">
@@ -164,7 +165,7 @@
         return this.hasItems || this.hasNestedDetails || this.additionalItemsSchema
       },
       hasItems() {
-        return this.element.items && this.element.items.length > 0
+        return this.element.items && (this.element.items.length > 0 || typeof this.element.items == 'object')
       },
       hasNestedDetails() {
         var nested = false
