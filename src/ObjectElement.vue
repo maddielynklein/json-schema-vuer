@@ -70,6 +70,20 @@
             </div>
           </template>
         </template>
+
+        <template v-for="key in dependencyKeys">
+          <CollapsibleElement v-bind:key="key + '-label'">
+            <template v-slot:title>
+              if&nbsp;<span class="jschema-vuer-prop-name">{{ key }}</span>:
+            </template>
+            <template v-slot:content>
+              <SchemaElement v-if="!Array.isArray(element.dependencies[key])"
+                :element="element.dependencies[key]" />
+              <SchemaElement v-else v-for="prop in element.dependencies[key]"
+                v-bind:key="prop" :element="{}" :name="prop" :required="true" />
+            </template>
+          </CollapsibleElement>
+        </template>
       </template>
     </CollapsibleElement> 
 
@@ -175,6 +189,10 @@
       patternPropertyKeys() {
         if (this.element.patternProperties != null && typeof this.element.patternProperties == 'object') return Object.keys(this.element.patternProperties)
         else return []
+      },
+      dependencyKeys() {
+        if (this.element.dependencies && typeof this.element.dependencies == 'object') return Object.keys(this.element.dependencies)
+        return []
       },
       hasNestedDetails() {
         var nested = false

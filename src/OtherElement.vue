@@ -4,7 +4,7 @@
       <span class="jschema-vuer-required" v-if="required">*</span>
       <span v-else>&nbsp;</span>
       <code v-if="nameType == 'pattern'">{{ name }}</code>
-      {{ nameType != 'pattern' ? name : '' }}:
+      {{ nameType != 'pattern' ? name : '' }} {{ hasInformation ? ':' : ''}}
     </span>
     <CollapsibleElement v-if="hasNested"
       :initiallyCollapsed="initiallyCollapsed"
@@ -151,6 +151,10 @@ export default {
     }
   },
   computed: {
+    hasInformation() {
+      return this.type != null || this.hasNested || this.constantValue || this.getHasEnum(this.element)
+        || this.getFormattedValues(this.element).length > 0
+    },
     constantValue() {
       return this.getConstantValue(this.element)
     },

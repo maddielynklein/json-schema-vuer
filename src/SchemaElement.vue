@@ -57,6 +57,7 @@ export default {
         element: this.computedElement,
         name: this.name,
         nameType: this.nameType,
+        required: this.required,
         initiallyCollapsed: this.initiallyCollapsed,
         showNonNestedBrackets: this.showNonNestedBrackets
       }
