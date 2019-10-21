@@ -23,8 +23,8 @@
 </template>
 
 <script>
-  import CollapsibleElement from './CollapsibleElement'
-  const SchemaElement = () => import("./SchemaElement");
+  import CollapsibleElement from './CollapsibleElement.vue'
+  const SchemaElement = () => import("./SchemaElement.vue");
   export default {
     name: 'CombinationElement',
     props: {

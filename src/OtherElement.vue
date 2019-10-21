@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import CollapsibleElement from './CollapsibleElement'
-import ValueElement from './ValueElement'
+import CollapsibleElement from './CollapsibleElement.vue'
+import ValueElement from './ValueElement.vue'
 
 export default {
   name: 'OtherElement',

@@ -2,8 +2,12 @@
   "name": "json-schema-vuer",
   "version": "1.0.0",
   "description": "Vue component to visualize json schema in interactive json view",
-  "main": "dist/index.js",
+  "main": "dist/json-schema-vuer.min.js",
   "scripts": {
+    "dev": "node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
+    "build": "node build/build.js",
+    "build-docs": "node build/build-docs.js",
+    "build-main": "node build/build-main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +29,19 @@
   },
   "homepage": "https://github.com/maddielynklein/json-schema-vuer#readme",
   "dependencies": {
-    "vue": "^2.6.10"
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "babel": "^6.23.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.1",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.41.2",
+    "webpack-merge": "^4.2.2"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.9"
   }
 }

@@ -1,9 +1,9 @@
 <script>
-import CollapsibleElement from './CollapsibleElement'
-import CombinationElement from './CombinationElement'
-import ObjectElement from './ObjectElement'
-import ArrayElement from './ArrayElement'
-import OtherElement from './OtherElement'
+import CollapsibleElement from './CollapsibleElement.vue'
+import CombinationElement from './CombinationElement.vue'
+import ObjectElement from './ObjectElement.vue'
+import ArrayElement from './ArrayElement.vue'
+import OtherElement from './OtherElement.vue'
 
 export default {
   name: "SchemaElement",

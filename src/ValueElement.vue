@@ -1,5 +1,5 @@
 <script>
-  import CollapsibleElement from './CollapsibleElement'
+  import CollapsibleElement from './CollapsibleElement.vue'
 
   export default {
     name: 'ValueElement',

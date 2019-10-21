@@ -88,8 +88,9 @@
 </template>
 
 <script>
-  import CollapsibleElement from './CollapsibleElement'
-  const SchemaElement = () => import("./SchemaElement");
+  import CollapsibleElement from './CollapsibleElement.vue'
+  import ValueElement from './ValueElement.vue'
+  const SchemaElement = () => import("./SchemaElement.vue");
 
   export default {
     name: 'ArrayElement',
@@ -119,6 +120,7 @@
     },
     components: {
       CollapsibleElement,
+      ValueElement,
       SchemaElement
     },
     data() {

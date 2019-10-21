@@ -2,14 +2,13 @@
   <SchemaElement 
     class="jschema-vuer-schema"
     :element="schemaObj"
-    :isParent="true"
     :initiallyCollapsed="false"
   />
 </template>
 
 <script>
 import Vue from 'vue'
-import SchemaElement from './SchemaElement'
+import SchemaElement from './SchemaElement.vue'
 export default {
   name: "JsonSchemaViewer",
   props: {
@@ -56,7 +55,6 @@ export default {
     Vue.prototype.$schema = this.schemaObj
     Vue.prototype.$schemaIdMap = {}
     this.mapSchemaIds(this.schemaObj)
-
   }
 }
 </script>

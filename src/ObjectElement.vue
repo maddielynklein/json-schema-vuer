@@ -101,9 +101,9 @@
 </template>
 
 <script>
-  import CollapsibleElement from './CollapsibleElement'
-  import ValueElement from './ValueElement'
-  const SchemaElement = () => import("./SchemaElement");
+  import CollapsibleElement from './CollapsibleElement.vue'
+  import ValueElement from './ValueElement.vue'
+  const SchemaElement = () => import("./SchemaElement.vue");
 
   export default {
     name: 'ObjectElement',
