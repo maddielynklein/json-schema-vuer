@@ -34,6 +34,14 @@ export default {
     showNonNestedBrackets: {
       type: Boolean,
       default: true
+    },
+    schema: {
+      type: Object,
+      required:true
+    },
+    schemaMap: {
+      type: Object,
+      required:true
     }
   },
   components: {
@@ -51,7 +59,9 @@ export default {
         nameType: this.nameType,
         required: this.required,
         initiallyCollapsed: this.initiallyCollapsed,
-        showNonNestedBrackets: this.showNonNestedBrackets
+        showNonNestedBrackets: this.showNonNestedBrackets,
+        schema: this.schema,
+        schemaMap: this.schemaMap
       }
     }
     var comp = null;
@@ -171,14 +181,14 @@ export default {
         match = regex.exec(path)
       }
       // use path in $ref string to try to find def
-      var def = keyPath.length > 0 ? this.$schema : (keyPath.length > 0 ? {} : null)
+      var def = keyPath.length > 0 ? this.schema : (keyPath.length > 0 ? {} : null)
       for (var i = 0; i < keyPath.length; i++) {
         def = def[keyPath[i]] || null
         if (!def) break
       }
       // others look in the mappings of id to shcema to try to find it
       if (!def) {
-        def = this.$schemaIdMap[element.$ref]
+        def = this.schemaMap[element.$ref]
       }
       // otherwise return element with title with unknown def
       if (!def) def = {type: 'Unknown definition schema'}

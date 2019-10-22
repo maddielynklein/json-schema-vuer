@@ -35,20 +35,20 @@
             <CollapsibleElement v-if="element.items.length > 1" type="array" :initiallyCollapsed="false">
               <template v-slot:content>
                 <SchemaElement v-for="(item,index) in element.items" v-bind:key="index"
-                  :element="item"
+                  :element="item" :schema="schema" :schemaMap="schemaMap"
                 />
               </template>
             </CollapsibleElement>
-            <SchemaElement v-else-if="Array.isArray(element.items)" :element="element.items[0]" />
-            <SchemaElement v-else :element="element.items" />
+            <SchemaElement v-else-if="Array.isArray(element.items)" :element="element.items[0]" :schema="schema" :schemaMap="schemaMap"/>
+            <SchemaElement v-else :element="element.items" :schema="schema" :schemaMap="schemaMap"/>
           </section>
 
           <template v-if="additionalItemsSchema">
-            <SchemaElement :element="additionalItemsSchema"/>
+            <SchemaElement :element="additionalItemsSchema" :schema="schema" :schemaMap="schemaMap"/>
           </template>
 
           <template v-if="containsSchema">
-            <SchemaElement :element="containsSchema"/>
+            <SchemaElement :element="containsSchema" :schema="schema" :schemaMap="schemaMap"/>
           </template>
           
           <template v-for="combo in combinationKeys">
@@ -56,8 +56,8 @@
             <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
               <span v-for="(option,index) in element[combo]" v-bind:key="index">
                 <SchemaElement v-if="option.$ref != null" 
-                  type="array" :element="option" :showNonNestedBrackets="false"/>
-                <ArrayElement v-else :element="option" :showNonNestedBrackets="false"/>
+                  type="array" :element="option" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
+                <ArrayElement v-else :element="option" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
               </span>
             </div>
           </template>
@@ -66,8 +66,8 @@
             <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">  
                 <span v-if="element[condition]">{{ condition }}:</span> 
                 <SchemaElement v-if="element[condition].$ref != null" 
-                  type="array" :element="element[condition]" :showNonNestedBrackets="false"/>
-                <ArrayElement v-else :element="element[condition]" :showNonNestedBrackets="false"/>
+                  type="array" :element="element[condition]" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
+                <ArrayElement v-else :element="element[condition]" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
             </div>
           </template>
         </template>
@@ -116,6 +116,14 @@
       showNonNestedBrackets: {
         type: Boolean,
         default: true
+      },
+      schema: {
+        type: Object,
+        required:true
+      },
+      schemaMap: {
+        type: Object,
+        required:true
       }
     },
     components: {

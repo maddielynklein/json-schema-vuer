@@ -13,8 +13,8 @@
           </template>
 
           <template v-slot:content>
-            <SchemaElement v-for="(schema,index) in element[combo]" v-bind:key="index"
-             :element="schema"/>
+            <SchemaElement v-for="(s,index) in element[combo]" v-bind:key="index"
+             :element="s" :schema="schema" :schemaMap="schemaMap"/>
           </template>
         </CollapsibleElement>
       </section>
@@ -38,6 +38,14 @@
       initiallyCollapsed:{
         type: Boolean,
         default: true
+      },
+      schema: {
+        type: Object,
+        required:true
+      },
+      schemaMap: {
+        type: Object,
+        required:true
       }
     },
     components: {

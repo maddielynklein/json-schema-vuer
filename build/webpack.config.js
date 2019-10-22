@@ -6,7 +6,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 var commonConfig = {
   output: {
     filename: 'json-schema-vuer.min.js',
-    libraryTarget: 'window',
+    libraryTarget: 'umd',
     library: 'JsonSchemaVuer'
   },
   mode: 'development',
@@ -43,12 +43,12 @@ module.exports=[
 
   // for the browser based implementation
   // browser based implementation
-      merge(commonConfig, {
-        entry: path.resolve(__dirname + '/../src/index.js'),
-        output: {
-          filename: 'json-schema-vuer.min.js'
-        }
-      }),
+  merge(commonConfig, {
+    entry: path.resolve(__dirname + '/../src/index.js'),
+    output: {
+      filename: 'json-schema-vuer.min.js'
+    }
+  }),
 
   // for the node based implementation
   merge(commonConfig, {

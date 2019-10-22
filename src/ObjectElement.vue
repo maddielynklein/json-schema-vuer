@@ -34,20 +34,22 @@
               :element="element.properties[key]"
               :name="key"
               :required="requiredProperties.indexOf(key) > -1"
+              :schema="schema" :schemaMap="schemaMap"
             />
             <SchemaElement v-for="key in patternPropertyKeys" v-bind:key="key"
               :element="element.patternProperties[key]"
               :name="key"
               nameType="pattern"
+              :schema="schema" :schemaMap="schemaMap"
             />
           </template>
 
           <template v-if="propertyNamesSchema">
-            <SchemaElement :element="propertyNamesSchema"/>
+            <SchemaElement :element="propertyNamesSchema" :schema="schema" :schemaMap="schemaMap"/>
           </template>
 
           <template v-if="additionalPropertiesSchema">
-            <SchemaElement :element="additionalPropertiesSchema"/>
+            <SchemaElement :element="additionalPropertiesSchema" :schema="schema" :schemaMap="schemaMap"/>
           </template>
           
           <template v-for="combo in combinationKeys">
@@ -55,8 +57,8 @@
             <div v-bind:key="combo" class="jschema-vuer-details" v-if="element[combo]">
               <span v-for="(option,index) in element[combo]" v-bind:key="index">
                 <SchemaElement v-if="option.$ref != null" 
-                  type="object" :element="option" :showNonNestedBrackets="false"/>
-                <ObjectElement v-else :element="option" :showNonNestedBrackets="false"/>
+                  type="object" :element="option" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
+                <ObjectElement v-else :element="option" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
               </span>
             </div>
           </template>
@@ -65,8 +67,8 @@
             <div v-bind:key="condition" class="jschema-vuer-conditional" v-if="element[condition]">
               <span v-if="element[condition]">{{ condition }}:</span>
               <SchemaElement v-if="element[condition].$ref != null" 
-                type="object" :element="element[condition]" :showNonNestedBrackets="false"/>
-              <ObjectElement :element="element[condition]" :showNonNestedBrackets="false"/>
+                type="object" :element="element[condition]" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
+              <ObjectElement :element="element[condition]" :showNonNestedBrackets="false" :schema="schema" :schemaMap="schemaMap"/>
             </div>
           </template>
         </template>
@@ -78,9 +80,9 @@
             </template>
             <template v-slot:content>
               <SchemaElement v-if="!Array.isArray(element.dependencies[key])"
-                :element="element.dependencies[key]" />
+                :element="element.dependencies[key]" :schema="schema" :schemaMap="schemaMap"/>
               <SchemaElement v-else v-for="prop in element.dependencies[key]"
-                v-bind:key="prop" :element="{}" :name="prop" :required="true" />
+                v-bind:key="prop" :element="{}" :name="prop" :required="true" :schema="schema" :schemaMap="schemaMap"/>
             </template>
           </CollapsibleElement>
         </template>
@@ -129,6 +131,14 @@
       showNonNestedBrackets:{
         type: Boolean,
         default: true
+      },
+      schema: {
+        type: Object,
+        required:true
+      },
+      schemaMap: {
+        type: Object,
+        required:true
       }
     },
     components: {

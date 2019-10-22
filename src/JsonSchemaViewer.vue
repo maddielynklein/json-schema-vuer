@@ -3,6 +3,8 @@
     class="jschema-vuer-schema"
     :element="schemaObj"
     :initiallyCollapsed="false"
+    :schemaMap="schemaMap"
+    :schema="schemaObj"
   />
 </template>
 
@@ -26,35 +28,29 @@ export default {
     }
   },
   components: {
-    SchemaElement,
+    SchemaElement
   },
-  data() {
-    return {
-      schemaObj: JSON.parse(this.schema)
+  computed: {
+    schemaObj() {
+      return JSON.parse(this.schema)
+    },
+    schemaMap() {
+      var map = {}
+      this.mapSchemaIds(map, this.schemaObj)
+      return map
     }
   },
-  watch: {
-    schema() {
-      Vue.prototype.$schema = this.schemaObj
-      this.mapSchemaIds(this.schemaObj)
-    },
-  },
   methods: {
-    mapSchemaIds(obj) {
+    mapSchemaIds(map, obj) {
       for (var prop in obj) {
         if (prop == 'id' || prop == '$id') {
-          Vue.prototype.$schemaIdMap[obj[prop]] = obj
+          map[obj[prop]] = obj
         }
         if(obj[prop] instanceof Object || obj[prop] instanceof Array) {
-          this.mapSchemaIds(obj[prop]);
+          this.mapSchemaIds(map, obj[prop]);
         } 
       }
     }
-  },
-  created() {
-    Vue.prototype.$schema = this.schemaObj
-    Vue.prototype.$schemaIdMap = {}
-    this.mapSchemaIds(this.schemaObj)
   }
 }
 </script>
