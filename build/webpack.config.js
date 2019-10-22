@@ -9,7 +9,7 @@ var commonConfig = {
     libraryTarget: 'umd',
     library: 'JsonSchemaVuer'
   },
-  mode: 'development',
+  mode: 'production',
   module: {
     rules: [
       {
