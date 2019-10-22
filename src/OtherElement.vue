@@ -174,7 +174,7 @@ export default {
     extraNestedElementKeys() {
       if (!this.hasType) {
         return Object.keys(this.element).filter((key) => {
-          return this.baseNestedKeys.indexOf(key) == -1 && ['enum', 'constant'].indexOf(key) == -1
+          return this.baseNestedKeys.indexOf(key) == -1 && ['enum', 'constant', 'type'].indexOf(key) == -1
         })
       }
       var keys = []
@@ -189,12 +189,13 @@ export default {
       if (this.isNumeric) {
         keys.push(
           'multipleOf',
+          'format'
         );
       }
       return keys
     },
     hasType() {
-      return this.element.type != null
+      return this.element.type != null && typeof this.element.type == 'string'
     },
     isString() {
       return this.element.type == 'string'

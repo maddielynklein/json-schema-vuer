@@ -110,7 +110,8 @@ export default {
         'minimum',
         'maximum',
         'exclusiveMinimum',
-        'exclusiveMaximum'
+        'exclusiveMaximum',
+        'format'
       ],
     }
   },
