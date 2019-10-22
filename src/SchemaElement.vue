@@ -140,11 +140,31 @@ export default {
   methods: {
     getType(element) {
       if (element.type) return element.type
-      if (Object.keys(element).filter(k => this.objectKeys.includes(k)).length > 0) return 'object'
-      if (Object.keys(element).filter(k => this.arrayKeys.includes(k)).length > 0) return 'array'
-      if (Object.keys(element).filter(k => this.stringKeys.includes(k)).length > 0) return 'string'
-      if (Object.keys(element).filter(k => this.numericKeys.includes(k)).length > 0) return 'numeric'
+      if (this.hasObjectKeys(element)) return 'object'
+      if (this.hasArrayKeys(element)) return 'array'
+      if (this.hasStringKeys(element)) return 'string'
+      if (this.hasNumericKeys(element)) return 'numeric'
       return null
+    },
+    hasObjectKeys(element) {
+      return Object.keys(element).filter(k => element[k] != null && this.objectKeys.includes(k)).length > 0
+    },
+    hasArrayKeys(element) {
+      return Object.keys(element).filter(k => element[k] != null && this.arrayKeys.includes(k)).length > 0
+    },
+    hasStringKeys(element) {
+      return Object.keys(element).filter(k => element[k] != null && this.stringKeys.includes(k)).length > 0
+    },
+    hasNumericKeys(element) {
+      return Object.keys(element).filter(k => element[k] != null && this.numericKeys.includes(k)).length > 0
+    },
+    getKeysForType(type) {
+      if (type == 'object') return this.objectKeys
+      if (type == 'array') return this.arrayKeys
+      if (type == 'string') return this.stringKeys
+      if (type == 'integer') return this.numericKeys
+      if (type == 'number') return this.numericKeys
+      return []
     },
     getIsCombination(element) {
       var hasCombo = false
@@ -156,7 +176,7 @@ export default {
     },
 
     getComputedElement(element) {
-      return this.combineCombinations(this.getAllOf(this.getDefinition(element)))
+      return this.combineCombinations(this.convertToOneOf(this.getAllOf(this.getDefinition(element))))
     },
     getDefinition(element) {
       if (!element.$ref) return element
@@ -182,7 +202,7 @@ export default {
         match = regex.exec(path)
       }
       // use path in $ref string to try to find def
-      var def = keyPath.length > 0 ? this.schema : (keyPath.length > 0 ? {} : null)
+      var def = keyPath.length > 0 ? this.schema : null
       for (var i = 0; i < keyPath.length; i++) {
         def = def[keyPath[i]] || null
         if (!def) break
@@ -217,6 +237,30 @@ export default {
         }
       }
       return el
+    },
+    convertToOneOf(element){
+      if (Array.isArray(element.type)) {
+        //if there are multiple types and additional validation for at least one type break each into separate schema as oneOf
+        if ((element.type.includes('object') && this.hasObjectKeys(element)) ||
+          (element.type.includes('array') && this.hasArrayKeys(element)) ||
+          (element.type.includes('string') && this.hasStringKeys(element)) ||
+          ((element.type.includes('integer') || element.type.includes('number')) && this.hasNumericKeys(element))) {
+          var self = this
+          element.oneOf = element.oneOf || []
+          element.type.forEach(t => {
+            var temp = {
+              type: t
+            }
+            self.getKeysForType(t).forEach(k => {
+              temp[k] = element[k]
+              if (element[k] != null) delete element[k]
+            })
+            element.oneOf.push(temp)
+          })
+          element.type = null
+        }
+      }
+      return element
     },
     combineCombinations(element) {
       this.combinationKeys.forEach(k => {
